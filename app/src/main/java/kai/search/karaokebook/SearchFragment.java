@@ -24,6 +24,7 @@ import android.widget.Spinner;
 public class SearchFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
 
+    private Spinner spinnerVendor;
     private Spinner spinnerSearchCategory;
     private EditText editSearchString;
     private ListView listSearchResult;
@@ -49,26 +50,28 @@ public class SearchFragment extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
-    private void setupSpinnerSearchCategory(Spinner spinner) {
-        ArrayAdapter<CharSequence> adapter;
-        adapter = ArrayAdapter.createFromResource(getActivity(), R.array.searchCategory, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_search, container, false);
 
+        spinnerVendor = (Spinner) view.findViewById(R.id.spinnerVendor);
         spinnerSearchCategory = (Spinner) view.findViewById(R.id.spinnerSearchCategory);
         editSearchString = (EditText) view.findViewById(R.id.editSearchString);
         listSearchResult = (ListView) view.findViewById(R.id.listSearchResult);
 
-        setupSpinnerSearchCategory(spinnerSearchCategory);
+        setupSpinner(spinnerVendor, R.array.vendor);
+        setupSpinner(spinnerSearchCategory, R.array.searchCategory);
 
         return view;
+    }
+
+    private void setupSpinner(Spinner spinner, int array) {
+        ArrayAdapter<CharSequence> adapter;
+        adapter = ArrayAdapter.createFromResource(getActivity(), array, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
     }
 
     // TODO: Rename method, update argument and hook method into UI event

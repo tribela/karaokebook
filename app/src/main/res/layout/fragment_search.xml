@@ -15,6 +15,11 @@
             android:orientation="horizontal">
 
             <Spinner
+                android:id="@+id/spinnerVendor"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+
+            <Spinner
                 android:id="@+id/spinnerSearchCategory"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent" />
