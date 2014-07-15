@@ -14,6 +14,9 @@ import android.widget.Spinner;
 
 import java.util.ArrayList;
 
+import kai.search.karaokebook.adapters.Song;
+import kai.search.karaokebook.adapters.SongAdapter;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -31,8 +34,8 @@ public class SearchFragment extends Fragment {
     private EditText editSearchString;
     private ListView listSearchResult;
 
-    private ArrayList<String> list;
-    private ArrayAdapter<String> adapter;
+    private ArrayList<Song> list;
+    private SongAdapter adapter;
 
     /**
      * Use this factory method to create a new instance of
@@ -54,7 +57,8 @@ public class SearchFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1);
+        list = new ArrayList<Song>();
+        adapter = new SongAdapter(getActivity(), list);
     }
 
     @Override
