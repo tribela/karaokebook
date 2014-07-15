@@ -12,6 +12,8 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
 
+import java.util.ArrayList;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -28,6 +30,9 @@ public class SearchFragment extends Fragment {
     private Spinner spinnerSearchCategory;
     private EditText editSearchString;
     private ListView listSearchResult;
+
+    private ArrayList<String> list;
+    private ArrayAdapter<String> adapter;
 
     /**
      * Use this factory method to create a new instance of
@@ -48,6 +53,8 @@ public class SearchFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1);
     }
 
     @Override
@@ -63,6 +70,7 @@ public class SearchFragment extends Fragment {
 
         setupSpinner(spinnerVendor, R.array.vendor);
         setupSpinner(spinnerSearchCategory, R.array.searchCategory);
+        listSearchResult.setAdapter(adapter);
 
         return view;
     }
