@@ -26,7 +26,7 @@ public class Main extends Activity
      */
     private CharSequence mTitle;
 
-    Fragment[] fragments = new Fragment[]{SearchFragment.newInstance("Cake", "Lie")};
+    Fragment[] fragments = new Fragment[]{SearchFragment.newInstance()};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
