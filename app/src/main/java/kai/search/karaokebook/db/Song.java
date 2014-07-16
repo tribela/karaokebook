@@ -1,4 +1,4 @@
-package kai.search.karaokebook.adapters;
+package kai.search.karaokebook.db;
 
 /**
  * Created by kjwon15 on 2014. 7. 16..
@@ -7,7 +7,6 @@ public class Song {
     private String vendor;
     private String number;
     private String title;
-
     private String singer;
 
     public Song(String vendor, String number, String title, String singer) {

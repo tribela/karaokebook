@@ -14,9 +14,11 @@ import android.widget.ListView;
 import android.widget.Spinner;
 
 import java.util.ArrayList;
+import java.util.List;
 
-import kai.search.karaokebook.adapters.Song;
 import kai.search.karaokebook.adapters.SongAdapter;
+import kai.search.karaokebook.db.DbAdapter;
+import kai.search.karaokebook.db.Song;
 
 
 /**
@@ -38,6 +40,8 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
 
     private ArrayList<Song> list;
     private SongAdapter adapter;
+
+    private DbAdapter dbAdapter;
 
     /**
      * Use this factory method to create a new instance of
@@ -61,6 +65,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
 
         list = new ArrayList<Song>();
         adapter = new SongAdapter(getActivity(), list);
+        dbAdapter = new DbAdapter(getActivity());
     }
 
     @Override
@@ -123,12 +128,18 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
 
     private void search() {
         String query = editSearchString.getText().toString();
+        int vendorPosition = spinnerVendor.getSelectedItemPosition();
         String vendor = spinnerVendor.getSelectedItem().toString();
         int category = spinnerSearchCategory.getSelectedItemPosition();
 
+        String queryVendor = null;
         String queryTitle = null;
         String querySinger = null;
         String queryNumber = null;
+
+        if (vendorPosition > 0) {
+            queryVendor = vendor;
+        }
 
         switch (category) {
             case 0:
@@ -142,7 +153,10 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
                 break;
         }
 
-        // TODO: query to database and show it.
+        List<Song> songs = dbAdapter.getSongs(queryVendor, queryTitle, queryNumber, querySinger);
+        list.clear();
+        list.addAll(songs);
+        adapter.notifyDataSetChanged();
     }
 
     /**

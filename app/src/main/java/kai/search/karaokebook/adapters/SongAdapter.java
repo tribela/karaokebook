@@ -10,6 +10,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import kai.search.karaokebook.R;
+import kai.search.karaokebook.db.Song;
 
 /**
  * Created by kjwon15 on 2014. 7. 16..
