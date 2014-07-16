@@ -96,7 +96,7 @@ public class DbAdapter {
         Cursor cursor = db.query(TABLE_SONG,
                 new String[]{COL_VENDOR, COL_NUMBER, COL_TITLE, COL_SINGER},
                 TextUtils.join(" and ", whereClauses.toArray()), args,
-                null, null, COL_TITLE + " asc");
+                null, null, COL_TITLE + " asc", "100");
 
         int indexVendor = cursor.getColumnIndex(COL_VENDOR);
         int indexTitle = cursor.getColumnIndex(COL_TITLE);

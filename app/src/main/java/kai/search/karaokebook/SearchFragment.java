@@ -4,14 +4,17 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,19 +32,23 @@ import kai.search.karaokebook.db.Song;
  * Use the {@link SearchFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SearchFragment extends Fragment implements View.OnClickListener {
+public class SearchFragment extends Fragment implements
+        TextView.OnEditorActionListener, AdapterView.OnItemSelectedListener {
     private OnFragmentInteractionListener mListener;
 
     private Spinner spinnerVendor;
     private Spinner spinnerSearchCategory;
     private EditText editSearchString;
-    private Button searchButton;
     private ListView listSearchResult;
 
     private ArrayList<Song> list;
     private SongAdapter adapter;
 
     private DbAdapter dbAdapter;
+
+    public SearchFragment() {
+        // Required empty public constructor
+    }
 
     /**
      * Use this factory method to create a new instance of
@@ -53,10 +60,6 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
     public static SearchFragment newInstance() {
         SearchFragment fragment = new SearchFragment();
         return fragment;
-    }
-
-    public SearchFragment() {
-        // Required empty public constructor
     }
 
     @Override
@@ -77,19 +80,17 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         spinnerVendor = (Spinner) view.findViewById(R.id.spinnerVendor);
         spinnerSearchCategory = (Spinner) view.findViewById(R.id.spinnerSearchCategory);
         editSearchString = (EditText) view.findViewById(R.id.editSearchString);
-        searchButton = (Button) view.findViewById(R.id.buttonSearch);
         listSearchResult = (ListView) view.findViewById(R.id.listSearchResult);
+
+        editSearchString.setOnEditorActionListener(this);
+        spinnerSearchCategory.setOnItemSelectedListener(this);
+        spinnerVendor.setOnItemSelectedListener(this);
 
         setupSpinner(spinnerVendor, R.array.vendor);
         setupSpinner(spinnerSearchCategory, R.array.searchCategory);
-        setupButton(searchButton);
         listSearchResult.setAdapter(adapter);
 
         return view;
-    }
-
-    private void setupButton(Button button) {
-        button.setOnClickListener(this);
     }
 
     private void setupSpinner(Spinner spinner, int array) {
@@ -116,14 +117,6 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
     public void onDetach() {
         super.onDetach();
         mListener = null;
-    }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.buttonSearch:
-                search();
-        }
     }
 
     private void search() {
@@ -157,6 +150,25 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         list.clear();
         list.addAll(songs);
         adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+        if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+            search();
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        search();
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
     }
 
     /**
