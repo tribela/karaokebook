@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
@@ -26,12 +27,13 @@ import kai.search.karaokebook.adapters.SongAdapter;
  * Use the {@link SearchFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SearchFragment extends Fragment {
+public class SearchFragment extends Fragment implements View.OnClickListener {
     private OnFragmentInteractionListener mListener;
 
     private Spinner spinnerVendor;
     private Spinner spinnerSearchCategory;
     private EditText editSearchString;
+    private Button searchButton;
     private ListView listSearchResult;
 
     private ArrayList<Song> list;
@@ -70,13 +72,19 @@ public class SearchFragment extends Fragment {
         spinnerVendor = (Spinner) view.findViewById(R.id.spinnerVendor);
         spinnerSearchCategory = (Spinner) view.findViewById(R.id.spinnerSearchCategory);
         editSearchString = (EditText) view.findViewById(R.id.editSearchString);
+        searchButton = (Button) view.findViewById(R.id.buttonSearch);
         listSearchResult = (ListView) view.findViewById(R.id.listSearchResult);
 
         setupSpinner(spinnerVendor, R.array.vendor);
         setupSpinner(spinnerSearchCategory, R.array.searchCategory);
+        setupButton(searchButton);
         listSearchResult.setAdapter(adapter);
 
         return view;
+    }
+
+    private void setupButton(Button button) {
+        button.setOnClickListener(this);
     }
 
     private void setupSpinner(Spinner spinner, int array) {
@@ -103,6 +111,38 @@ public class SearchFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.buttonSearch:
+                search();
+        }
+    }
+
+    private void search() {
+        String query = editSearchString.getText().toString();
+        String vendor = spinnerVendor.getSelectedItem().toString();
+        int category = spinnerSearchCategory.getSelectedItemPosition();
+
+        String queryTitle = null;
+        String querySinger = null;
+        String queryNumber = null;
+
+        switch (category) {
+            case 0:
+                queryTitle = query;
+                break;
+            case 1:
+                querySinger = query;
+                break;
+            case 2:
+                queryNumber = query;
+                break;
+        }
+
+        // TODO: query to database and show it.
     }
 
     /**
