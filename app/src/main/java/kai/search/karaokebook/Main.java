@@ -28,6 +28,7 @@ public class Main extends Activity
 
     Fragment[] fragments = new Fragment[]{
             new SearchFragment(),
+            new SettingFragment(),
     };
 
     @Override
