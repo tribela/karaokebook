@@ -29,8 +29,6 @@ import kai.search.karaokebook.db.Song;
  * Activities that contain this fragment must implement the
  * {@link SearchFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link SearchFragment#newInstance} factory method to
- * create an instance of this fragment.
  */
 public class SearchFragment extends Fragment implements
         TextView.OnEditorActionListener, AdapterView.OnItemSelectedListener {
@@ -48,18 +46,6 @@ public class SearchFragment extends Fragment implements
 
     public SearchFragment() {
         // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @return A new instance of fragment SearchFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static SearchFragment newInstance() {
-        SearchFragment fragment = new SearchFragment();
-        return fragment;
     }
 
     @Override
