@@ -21,6 +21,9 @@ public class DbAdapter {
     private static final String COL_TITLE = "title";
     private static final String COL_SINGER = "singer";
 
+    private static final String TABLE_INFO = "information";
+    private static final String COL_UPDATED = "updated";
+
     private Context context;
     private DbHelper dbHelper;
 
@@ -42,7 +45,7 @@ public class DbAdapter {
         return id;
     }
 
-    public boolean createSongs(List<Song> songs) {
+    public boolean createSongs(List<Song> songs, String updated) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         boolean succeed = false;
         db.beginTransaction();
@@ -55,6 +58,10 @@ public class DbAdapter {
                 values.put(COL_SINGER, song.getSinger());
                 db.insert(TABLE_SONG, null, values);
             }
+
+            ContentValues values = new ContentValues();
+            values.put(COL_UPDATED, updated);
+            db.update(TABLE_INFO, values, null, null);
 
             db.setTransactionSuccessful();
             succeed = true;
@@ -113,6 +120,20 @@ public class DbAdapter {
         return results;
     }
 
+    public String getLastUpdated() {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_INFO,
+                new String[]{COL_UPDATED},
+                null,
+                null, null, null, null);
+
+        cursor.moveToFirst();
+        String lastUpdated = cursor.getString(0);
+
+        return lastUpdated;
+    }
+
+
     private class DbHelper extends SQLiteOpenHelper {
         private static final String DB_NAME = "karaoke";
         private static final int DB_VERSION = 1;
@@ -123,7 +144,8 @@ public class DbAdapter {
 
         @Override
         public void onCreate(SQLiteDatabase db) {
-            String query = String.format(
+            String query;
+            query = String.format(
                     "create table %s(" +
                             "%s text not null," +
                             "%s text not null," +
@@ -134,7 +156,20 @@ public class DbAdapter {
             );
             db.execSQL(query);
 
+            query = String.format(
+                    "create table %s(" +
+                            "%s date not null" +
+                            ");",
+                    TABLE_INFO, COL_UPDATED
+            );
+
+            // Insert zero last updated.
+            ContentValues values = new ContentValues();
+            values.put(COL_UPDATED, "1970-01-01");
+            db.insert(TABLE_INFO, null, values);
+
             Log.i("DB", "Database created");
+            db.execSQL(query);
         }
 
         @Override
