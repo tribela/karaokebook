@@ -35,7 +35,7 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
         if (preference.getKey().equals(KEY_UPDATE)) {
             String msg;
             if (updateChecker.updateAvailable()) {
-                // TODO: do update.
+                updateChecker.doUpdate(getActivity());
             }
         }
         return false;

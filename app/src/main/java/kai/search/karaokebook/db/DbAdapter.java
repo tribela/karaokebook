@@ -162,6 +162,7 @@ public class DbAdapter {
                             ");",
                     TABLE_INFO, COL_UPDATED
             );
+            db.execSQL(query);
 
             // Insert zero last updated.
             ContentValues values = new ContentValues();
@@ -169,7 +170,6 @@ public class DbAdapter {
             db.insert(TABLE_INFO, null, values);
 
             Log.i("DB", "Database created");
-            db.execSQL(query);
         }
 
         @Override
