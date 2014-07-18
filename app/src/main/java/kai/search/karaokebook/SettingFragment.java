@@ -12,6 +12,7 @@ import android.preference.PreferenceFragment;
 public class SettingFragment extends PreferenceFragment implements Preference.OnPreferenceClickListener {
 
     private static final String KEY_UPDATE = "update";
+    private UpdateChecker updateChecker;
 
 
     public SettingFragment() {
@@ -23,14 +24,19 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.pref_general);
 
+        updateChecker = new UpdateChecker(getActivity());
+
         Preference update = findPreference(KEY_UPDATE);
         update.setOnPreferenceClickListener(this);
     }
 
     @Override
     public boolean onPreferenceClick(Preference preference) {
-        if (preference.getKey() == KEY_UPDATE) {
-            // TODO: check update.
+        if (preference.getKey().equals(KEY_UPDATE)) {
+            String msg;
+            if (updateChecker.updateAvailable()) {
+                // TODO: do update.
+            }
         }
         return false;
     }
