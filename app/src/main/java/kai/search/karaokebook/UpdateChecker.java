@@ -57,29 +57,32 @@ public class UpdateChecker {
         }
     }
 
-    private class CheckUpdate extends AsyncTask<Object, Object, String> {
+    private String getHttpContent(String url) throws IOException {
+        HttpClient client = new DefaultHttpClient();
+        HttpGet request = new HttpGet(url);
+        HttpResponse response = client.execute(request);
+
+        InputStream content = response.getEntity().getContent();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(content));
+        StringBuilder builder = new StringBuilder();
+        String buffer;
+
+        while ((buffer = reader.readLine()) != null) {
+            builder.append(buffer);
+        }
+
+        return builder.toString();
+    }
+
+        private class CheckUpdate extends AsyncTask<Void, Void, String> {
 
         @Override
-        protected String doInBackground(Object... params) {
-            String url = "http://karaoke.kjwon15.net/info";
+        protected String doInBackground(Void... params) {
 
-            HttpClient client = new DefaultHttpClient();
-            HttpGet request = new HttpGet(url);
             try {
-                HttpResponse response = client.execute(request);
-                InputStream content = response.getEntity().getContent();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(content));
-                StringBuilder builder = new StringBuilder();
-                String buffer;
-
-                while ((buffer = reader.readLine()) != null) {
-                    builder.append(buffer);
-                }
-
-                JSONObject json = new JSONObject(builder.toString());
+                String content = getHttpContent("http://karaoke.kjwon15.net/info");
+                JSONObject json = new JSONObject(content);
                 return json.getString("last_updated");
-            } catch (ClientProtocolException e) {
-                e.printStackTrace();
             } catch (JSONException e) {
                 e.printStackTrace();
             } catch (IOException e) {
