@@ -151,8 +151,6 @@ public class UpdateChecker {
 
                 publishProgress(ACTION_SET_MAX, songs.length());
 
-                ArrayList<Song> songArrayList = new ArrayList<Song>();
-
                 for (int i = 0; i < songs.length(); i++) {
                     JSONObject song = songs.getJSONObject(i);
                     String vendor = song.getString("vendor");
@@ -162,10 +160,10 @@ public class UpdateChecker {
 
                     publishProgress(ACTION_SET_PROGRESS, i + 1, title);
 
-                    songArrayList.add(new Song(vendor, number, title, singer));
+                    dbAdapter.createSong(new Song(vendor, number, title, singer));
                 }
 
-                dbAdapter.createSongs(songArrayList, updated);
+                dbAdapter.setLastUpdated(updated);
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (JSONException e) {

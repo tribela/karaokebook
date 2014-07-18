@@ -120,6 +120,15 @@ public class DbAdapter {
         return results;
     }
 
+    public boolean setLastUpdated(String updated) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COL_UPDATED, updated);
+        long result = db.insert(TABLE_INFO, null, values);
+
+        return result > 0;
+    }
+
     public String getLastUpdated() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor cursor = db.query(TABLE_INFO,
