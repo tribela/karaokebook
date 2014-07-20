@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
 import android.util.Log;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -154,12 +155,13 @@ public class DbAdapter {
         @Override
         public void onCreate(SQLiteDatabase db) {
             String query;
-            query = String.format(
-                    "create table %s(" +
-                            "%s text not null," +
-                            "%s text not null," +
-                            "%s text not null," +
-                            "%s text not null" +
+            query = MessageFormat.format(
+                    "create table {0}(" +
+                            "{1} text not null," +
+                            "{2} text not null," +
+                            "{3} text not null," +
+                            "{4} text not null," +
+                            "unique ({1}, {2}) on conflict replace" +
                             ");",
                     TABLE_SONG, COL_VENDOR, COL_NUMBER, COL_TITLE, COL_SINGER
             );
