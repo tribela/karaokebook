@@ -30,6 +30,7 @@ public class DbAdapter {
 
     private static final String TABLE_INFO = "information";
     private static final String COL_UPDATED = "updated";
+    private static final String DATE_INITIAL = "1970-01-01";
 
     private Context context;
     private DbHelper dbHelper;
@@ -162,6 +163,10 @@ public class DbAdapter {
         return lastUpdated;
     }
 
+    public boolean isFirstTime() {
+        return getLastUpdated().equals(DATE_INITIAL);
+    }
+
 
     private class DbHelper extends SQLiteOpenHelper {
         private static final String DB_NAME = "karaoke";
@@ -196,7 +201,7 @@ public class DbAdapter {
 
             // Insert zero last updated.
             ContentValues values = new ContentValues();
-            values.put(COL_UPDATED, "1970-01-01");
+            values.put(COL_UPDATED, DATE_INITIAL);
             db.insert(TABLE_INFO, null, values);
 
             Log.i("DB", "Database created");

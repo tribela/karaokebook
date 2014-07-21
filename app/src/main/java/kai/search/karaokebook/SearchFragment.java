@@ -55,6 +55,14 @@ public class SearchFragment extends Fragment implements
         list = new ArrayList<Song>();
         adapter = new SongAdapter(getActivity(), list);
         dbAdapter = new DbAdapter(getActivity());
+
+        checkFirstRun();
+    }
+
+    private void checkFirstRun() {
+        if (dbAdapter.isFirstTime()) {
+            new UpdateChecker(getActivity()).doUpdate();
+        }
     }
 
     @Override
