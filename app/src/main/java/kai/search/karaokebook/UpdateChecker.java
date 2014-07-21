@@ -18,12 +18,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.concurrent.ExecutionException;
 
 import kai.search.karaokebook.db.DbAdapter;
-import kai.search.karaokebook.db.Song;
 
 public class UpdateChecker {
 
@@ -100,7 +98,7 @@ public class UpdateChecker {
         }
     }
 
-    private class DoUpdate extends AsyncTask<Object, Object, Void> {
+    public class DoUpdate extends AsyncTask<Object, Object, Void> {
         private static final int ACTION_SET_MAX = 0;
         private static final int ACTION_SET_PROGRESS = 1;
         private final Context context;
@@ -151,25 +149,17 @@ public class UpdateChecker {
 
                 publishProgress(ACTION_SET_MAX, songs.length());
 
-                for (int i = 0; i < songs.length(); i++) {
-                    JSONObject song = songs.getJSONObject(i);
-                    String vendor = song.getString("vendor");
-                    String number = song.getString("number");
-                    String title = song.getString("title");
-                    String singer = song.getString("singer");
-
-                    publishProgress(ACTION_SET_PROGRESS, i + 1, title);
-
-                    dbAdapter.createSong(new Song(vendor, number, title, singer));
-                }
-
-                dbAdapter.setLastUpdated(updated);
+                dbAdapter.createSongs(songs, updated, this);
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (JSONException e) {
                 e.printStackTrace();
             }
             return null;
+        }
+
+        public void publishProgress(int position, String message) {
+            publishProgress(ACTION_SET_PROGRESS, position, message);
         }
 
         @Override

@@ -8,9 +8,15 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
 import android.util.Log;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+
+import kai.search.karaokebook.UpdateChecker;
 
 /**
  * Created by kjwon15 on 2014. 7. 17..
@@ -46,18 +52,31 @@ public class DbAdapter {
         return id;
     }
 
-    public boolean createSongs(List<Song> songs, String updated) {
+    public boolean createSongs(JSONArray songs, String updated, UpdateChecker.DoUpdate task) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         boolean succeed = false;
         db.beginTransaction();
         try {
-            for (Song song : songs) {
-                ContentValues values = new ContentValues();
-                values.put(COL_VENDOR, song.getVendor());
-                values.put(COL_NUMBER, song.getNumber());
-                values.put(COL_TITLE, song.getTitle());
-                values.put(COL_SINGER, song.getSinger());
-                db.insert(TABLE_SONG, null, values);
+            for (int i = 0; i < songs.length(); i++) {
+                try {
+                    ContentValues values = new ContentValues();
+                    JSONObject song = songs.getJSONObject(i);
+
+                    String vendor = song.getString("vendor");
+                    String number = song.getString("number");
+                    String title = song.getString("title");
+                    String singer = song.getString("singer");
+
+                    values.put(COL_VENDOR, vendor);
+                    values.put(COL_NUMBER, number);
+                    values.put(COL_TITLE, title);
+                    values.put(COL_SINGER, singer);
+                    db.insert(TABLE_SONG, null, values);
+
+                    task.publishProgress(i + 1, title);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
 
             ContentValues values = new ContentValues();
