@@ -26,9 +26,11 @@ import kai.search.karaokebook.db.DbAdapter;
 public class UpdateChecker {
 
     private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd");
+    private final Context context;
     private DbAdapter dbAdapter;
 
     public UpdateChecker(Context context) {
+        this.context = context;
         this.dbAdapter = new DbAdapter(context);
     }
 
@@ -58,7 +60,7 @@ public class UpdateChecker {
         }
     }
 
-    public void doUpdate(Context context) {
+    public void doUpdate() {
         new DoUpdate(context).execute();
     }
 

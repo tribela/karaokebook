@@ -36,7 +36,7 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
         if (preference.getKey().equals(KEY_UPDATE)) {
             String msg;
             if (updateChecker.updateAvailable()) {
-                updateChecker.doUpdate(getActivity());
+                updateChecker.doUpdate();
             } else {
                 Toast.makeText(getActivity(), R.string.msg_update_unavailable, Toast.LENGTH_SHORT)
                         .show();
