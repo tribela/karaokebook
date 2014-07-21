@@ -125,7 +125,7 @@ public class DbAdapter {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COL_UPDATED, updated);
-        long result = db.insert(TABLE_INFO, null, values);
+        long result = db.update(TABLE_INFO, values, null, null);
 
         return result > 0;
     }
