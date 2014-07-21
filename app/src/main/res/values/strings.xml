@@ -10,5 +10,6 @@
     <string name="action_settings">Settings</string>
 
     <string name="msg_update_db">Update database...</string>
+    <string name="msg_update_unavailable">Update is not available.</string>
 
 </resources>
