@@ -2,8 +2,10 @@ package kai.search.karaokebook;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,6 +46,8 @@ public class SearchFragment extends Fragment implements
 
     private DbAdapter dbAdapter;
 
+    private SharedPreferences sharedPreference;
+
     public SearchFragment() {
         // Required empty public constructor
     }
@@ -55,6 +59,8 @@ public class SearchFragment extends Fragment implements
         list = new ArrayList<Song>();
         adapter = new SongAdapter(getActivity(), list);
         dbAdapter = new DbAdapter(getActivity());
+
+        sharedPreference = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
         checkFirstRun();
     }
@@ -118,6 +124,9 @@ public class SearchFragment extends Fragment implements
         int vendorPosition = spinnerVendor.getSelectedItemPosition();
         String vendor = spinnerVendor.getSelectedItem().toString();
         int category = spinnerSearchCategory.getSelectedItemPosition();
+        boolean searchFromMiddle = sharedPreference.getBoolean(
+                getString(R.string.key_search_middle), false);
+
 
         String queryVendor = null;
         String queryTitle = null;
@@ -140,7 +149,8 @@ public class SearchFragment extends Fragment implements
                 break;
         }
 
-        List<Song> songs = dbAdapter.getSongs(queryVendor, queryTitle, queryNumber, querySinger);
+        List<Song> songs = dbAdapter.getSongs(
+                queryVendor, queryTitle, queryNumber, querySinger, searchFromMiddle);
         list.clear();
         list.addAll(songs);
         adapter.notifyDataSetChanged();

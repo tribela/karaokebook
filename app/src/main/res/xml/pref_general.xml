@@ -2,6 +2,11 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory android:title="@string/category_general">
+        <CheckBoxPreference
+            android:key="@string/key_search_middle"
+            android:summaryOn="@string/text_search_middle_on"
+            android:summaryOff="@string/text_search_middle_off"
+            android:title="@string/title_search_middle" />
         <Preference
             android:key="update"
             android:title="@string/title_activity_update" />

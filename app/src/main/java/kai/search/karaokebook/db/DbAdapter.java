@@ -94,30 +94,38 @@ public class DbAdapter {
         return succeed;
     }
 
-    public List<Song> getSongs(String _vendor, String _title, String _number, String _singer) {
+    public List<Song> getSongs(String _vendor, String _title, String _number, String _singer,
+                               boolean searchFromMiddle) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         ArrayList<String> whereClauses = new ArrayList<String>();
         ArrayList<String> whereArgs = new ArrayList<String>();
         ArrayList<Song> results = new ArrayList<Song>();
 
+        String likeFormat;
+        if (searchFromMiddle) {
+            likeFormat = "%%%s%%";
+        } else {
+            likeFormat = "%s%%";
+        }
+
         if (_vendor != null) {
             whereClauses.add("vendor like ?");
-            whereArgs.add('%' + _vendor + '%');
+            whereArgs.add(String.format(likeFormat, _vendor));
         }
 
         if (_title != null) {
             whereClauses.add("title like ?");
-            whereArgs.add('%' + _title + '%');
+            whereArgs.add(String.format(likeFormat, _title));
         }
 
         if (_number != null) {
             whereClauses.add("number like ?");
-            whereArgs.add('%' + _number + '%');
+            whereArgs.add(String.format(likeFormat, _number));
         }
 
         if (_singer != null) {
             whereClauses.add("singer like ?");
-            whereArgs.add('%' + _singer + '%');
+            whereArgs.add(String.format(likeFormat, _singer));
         }
 
         String[] args = whereArgs.toArray(new String[whereArgs.size()]);
