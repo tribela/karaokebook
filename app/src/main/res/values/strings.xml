@@ -12,4 +12,6 @@
     <string name="msg_update_db">Update database...</string>
     <string name="msg_update_unavailable">Update is not available.</string>
 
+    <string name="category_general">General</string>
+
 </resources>
