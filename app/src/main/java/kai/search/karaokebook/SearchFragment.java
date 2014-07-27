@@ -161,7 +161,8 @@ public class SearchFragment extends Fragment implements
 
     @Override
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-        if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+        if (actionId == EditorInfo.IME_ACTION_SEARCH ||
+                event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
             search();
             return true;
         }
