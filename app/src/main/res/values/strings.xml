@@ -3,6 +3,7 @@
 
     <string name="app_name">KaraokeBook</string>
     <string name="title_search">Search</string>
+    <string name="title_favourites">Favourites</string>
     <string name="title_setting">Setting</string>
     <string name="title_activity_update">Update</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>

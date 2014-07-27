@@ -32,6 +32,9 @@ public class DbAdapter {
     private static final String COL_TITLE = "title";
     private static final String COL_SINGER = "singer";
 
+    private static final String TABLE_STAR = "stars";
+    private static final String COL_SONG_ID = "song_id";
+
     private static final String TABLE_INFO = "information";
     private static final String COL_UPDATED = "updated";
     private static final String DATE_INITIAL = "1970-01-01";
@@ -153,6 +156,31 @@ public class DbAdapter {
         return results;
     }
 
+    public List<Song> getFavouriteSongs() {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        ArrayList<Song> results = new ArrayList<Song>();
+
+        Cursor cursor = db.rawQuery(MessageFormat.format(
+                "select {1}, {2}, {3}, {4} from {0} where rowid in (" +
+                        "select {6} from {5})",
+                TABLE_SONG, COL_VENDOR, COL_TITLE, COL_NUMBER, COL_SINGER,
+                TABLE_STAR, COL_SONG_ID),null );
+
+        int indexVendor = cursor.getColumnIndex(COL_VENDOR);
+        int indexTitle = cursor.getColumnIndex(COL_TITLE);
+        int indexNumber = cursor.getColumnIndex(COL_NUMBER);
+        int indexSinger = cursor.getColumnIndex(COL_SINGER);
+        while (cursor.moveToNext()) {
+            String vendor = cursor.getString(indexVendor);
+            String title = cursor.getString(indexTitle);
+            String number = cursor.getString(indexNumber);
+            String singer = cursor.getString(indexSinger);
+            results.add(new Song(vendor, number, title, singer));
+        }
+
+        return results;
+    }
+
     public boolean setLastUpdated(String updated) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -223,6 +251,15 @@ public class DbAdapter {
                             "{1} date not null" +
                             ");",
                     TABLE_INFO, COL_UPDATED
+            );
+            db.execSQL(query);
+
+            query = MessageFormat.format(
+                    "create table if not exists {0}(" +
+                            "{1} integer primary key," +
+                            "foreign key({1}) references {2}(rowid)" +
+                            ");",
+                    TABLE_STAR, COL_SONG_ID, TABLE_SONG
             );
             db.execSQL(query);
 
