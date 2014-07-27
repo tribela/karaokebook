@@ -1,7 +1,9 @@
 package kai.search.karaokebook;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
@@ -33,7 +35,7 @@ import kai.search.karaokebook.db.Song;
  * to handle interaction events.
  */
 public class SearchFragment extends Fragment implements
-        TextView.OnEditorActionListener, AdapterView.OnItemSelectedListener {
+        TextView.OnEditorActionListener, AdapterView.OnItemSelectedListener, AdapterView.OnItemLongClickListener {
     private OnFragmentInteractionListener mListener;
 
     private Spinner spinnerVendor;
@@ -89,6 +91,7 @@ public class SearchFragment extends Fragment implements
         setupSpinner(spinnerVendor, R.array.vendor);
         setupSpinner(spinnerSearchCategory, R.array.searchCategory);
         listSearchResult.setAdapter(adapter);
+        listSearchResult.setOnItemLongClickListener(this);
 
         return view;
     }
@@ -173,6 +176,29 @@ public class SearchFragment extends Fragment implements
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
 
+    }
+
+    @Override
+    public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+        DialogInterface.OnClickListener clickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch(which) {
+                    case DialogInterface.BUTTON_POSITIVE:
+                        Song song = adapter.getItem(position);
+                        dbAdapter.addFavouriteSong(song);
+                        break;
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        break;
+                }
+            }
+        };
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage(R.string.msg_add_to_favourite);
+        builder.setPositiveButton(android.R.string.yes, clickListener);
+        builder.setNegativeButton(android.R.string.no, clickListener);
+        builder.show();
+        return false;
     }
 
     /**

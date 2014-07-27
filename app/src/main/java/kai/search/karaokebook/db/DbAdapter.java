@@ -26,6 +26,8 @@ import kai.search.karaokebook.UpdateChecker;
  * Created by kjwon15 on 2014. 7. 17..
  */
 public class DbAdapter {
+    private static final String COL_ROWID = "rowid";
+
     private static final String TABLE_SONG = "songs";
     private static final String COL_VENDOR = "vendor";
     private static final String COL_NUMBER = "number";
@@ -137,23 +139,38 @@ public class DbAdapter {
 
         String[] args = whereArgs.toArray(new String[whereArgs.size()]);
         Cursor cursor = db.query(TABLE_SONG,
-                new String[]{COL_VENDOR, COL_NUMBER, COL_TITLE, COL_SINGER},
+                new String[]{COL_ROWID, COL_VENDOR, COL_NUMBER, COL_TITLE, COL_SINGER},
                 TextUtils.join(" and ", whereClauses.toArray()), args,
                 null, null, COL_TITLE + " asc", "100");
 
+        int indexRowid = cursor.getColumnIndex(COL_ROWID);
         int indexVendor = cursor.getColumnIndex(COL_VENDOR);
         int indexTitle = cursor.getColumnIndex(COL_TITLE);
         int indexNumber = cursor.getColumnIndex(COL_NUMBER);
         int indexSinger = cursor.getColumnIndex(COL_SINGER);
         while (cursor.moveToNext()) {
+            long rowid = cursor.getLong(indexRowid);
             String vendor = cursor.getString(indexVendor);
             String title = cursor.getString(indexTitle);
             String number = cursor.getString(indexNumber);
             String singer = cursor.getString(indexSinger);
-            results.add(new Song(vendor, number, title, singer));
+            results.add(new Song(rowid, vendor, number, title, singer));
         }
 
+        db.close();
         return results;
+    }
+
+    public boolean addFavouriteSong(Song song) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        long rowid = song.getRowid();
+
+        values.put(COL_SONG_ID, rowid);
+        long result = db.insert(TABLE_STAR, null, values);
+
+        db.close();
+        return result > 0;
     }
 
     public List<Song> getFavouriteSongs() {
@@ -161,23 +178,27 @@ public class DbAdapter {
         ArrayList<Song> results = new ArrayList<Song>();
 
         Cursor cursor = db.rawQuery(MessageFormat.format(
-                "select {1}, {2}, {3}, {4} from {0} where rowid in (" +
-                        "select {6} from {5})",
-                TABLE_SONG, COL_VENDOR, COL_TITLE, COL_NUMBER, COL_SINGER,
-                TABLE_STAR, COL_SONG_ID),null );
+                "select {1}, {2}, {3}, {4}, {5} from {0} where rowid in (" +
+                        "select {7} from {6})",
+                TABLE_SONG, COL_ROWID, COL_VENDOR, COL_TITLE, COL_NUMBER, COL_SINGER,
+                TABLE_STAR, COL_SONG_ID
+        ), null);
 
+        int indexRowid = cursor.getColumnIndex(COL_ROWID);
         int indexVendor = cursor.getColumnIndex(COL_VENDOR);
         int indexTitle = cursor.getColumnIndex(COL_TITLE);
         int indexNumber = cursor.getColumnIndex(COL_NUMBER);
         int indexSinger = cursor.getColumnIndex(COL_SINGER);
         while (cursor.moveToNext()) {
+            long rowid = cursor.getLong(indexRowid);
             String vendor = cursor.getString(indexVendor);
             String title = cursor.getString(indexTitle);
             String number = cursor.getString(indexNumber);
             String singer = cursor.getString(indexSinger);
-            results.add(new Song(vendor, number, title, singer));
+            results.add(new Song(rowid, vendor, number, title, singer));
         }
 
+        db.close();
         return results;
     }
 
@@ -187,6 +208,7 @@ public class DbAdapter {
         values.put(COL_UPDATED, updated);
         long result = db.update(TABLE_INFO, values, null, null);
 
+        db.close();
         return result > 0;
     }
 
@@ -200,6 +222,7 @@ public class DbAdapter {
         cursor.moveToFirst();
         String lastUpdated = cursor.getString(0);
 
+        db.close();
         return lastUpdated;
     }
 

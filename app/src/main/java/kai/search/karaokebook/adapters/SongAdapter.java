@@ -26,6 +26,11 @@ public class SongAdapter extends ArrayAdapter<Song> {
     }
 
     @Override
+    public Song getItem(int position) {
+        return super.getItem(position);
+    }
+
+    @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = convertView;
         if (view == null) {
