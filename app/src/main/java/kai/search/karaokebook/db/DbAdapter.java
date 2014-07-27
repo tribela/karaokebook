@@ -173,6 +173,15 @@ public class DbAdapter {
         return result > 0;
     }
 
+    public boolean removeFavouriteSong(Song song) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        long result = db.delete(TABLE_STAR, "rowid = ?",
+                new String[]{String.valueOf(song.getRowid())});
+
+        db.close();
+        return result > 0;
+    }
+
     public List<Song> getFavouriteSongs() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         ArrayList<Song> results = new ArrayList<Song>();

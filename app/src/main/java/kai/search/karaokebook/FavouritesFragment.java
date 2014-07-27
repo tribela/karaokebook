@@ -1,14 +1,17 @@
 package kai.search.karaokebook;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.ListFragment;
+import android.content.DialogInterface;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 
@@ -18,7 +21,7 @@ import kai.search.karaokebook.adapters.SongAdapter;
 import kai.search.karaokebook.db.DbAdapter;
 import kai.search.karaokebook.db.Song;
 
-public class FavouritesFragment extends Fragment {
+public class FavouritesFragment extends ListFragment implements AdapterView.OnItemLongClickListener {
 
     private ArrayList<Song> list;
     private SongAdapter adapter;
@@ -30,7 +33,7 @@ public class FavouritesFragment extends Fragment {
     /**
      * The fragment's ListView/GridView.
      */
-    private AbsListView mListView;
+    private ListView mListView;
 
 
     /**
@@ -62,6 +65,7 @@ public class FavouritesFragment extends Fragment {
         for (Song song : dbAdapter.getFavouriteSongs()) {
             list.add(song);
         }
+        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -70,8 +74,9 @@ public class FavouritesFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_favourites, container, false);
 
         // Set the adapter
-        mListView = (AbsListView) view.findViewById(android.R.id.list);
-        ((AdapterView<ListAdapter>) mListView).setAdapter(adapter);
+        mListView = (ListView) view.findViewById(android.R.id.list);
+        mListView.setAdapter(adapter);
+        mListView.setOnItemLongClickListener(this);
 
         return view;
     }
@@ -99,6 +104,30 @@ public class FavouritesFragment extends Fragment {
         if (emptyText instanceof TextView) {
             ((TextView) emptyView).setText(emptyText);
         }
+    }
+
+    @Override
+    public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+        DialogInterface.OnClickListener clickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch(which) {
+                    case DialogInterface.BUTTON_POSITIVE:
+                        Song song = adapter.getItem(position);
+                        dbAdapter.removeFavouriteSong(song);
+                        reloadFavourites();
+                        break;
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        break;
+                }
+            }
+        };
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage(R.string.msg_remove_favourite);
+        builder.setPositiveButton(android.R.string.yes, clickListener);
+        builder.setNegativeButton(android.R.string.no, clickListener);
+        builder.show();
+        return false;
     }
 
     /**
