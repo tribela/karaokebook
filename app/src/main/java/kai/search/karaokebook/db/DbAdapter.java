@@ -12,6 +12,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -248,23 +250,19 @@ public class DbAdapter {
         public DbHelper(Context context) {
             super(context, DB_NAME, null, DB_VERSION);
             this.context = context;
+
+            if (checkDbExists() == false) {
+                try {
+                    copyDatabase();
+                    Log.i("DB", "Copy initial database succeeded.");
+                } catch (IOException e) {
+                    Log.e("DB", "Failed to copy database");
+                }
+            }
         }
 
         @Override
         public void onCreate(SQLiteDatabase db) {
-
-            try {
-                copyDatabase();
-                Log.i("DB", "Copy initial database succeeded.");
-            } catch (IOException e) {
-                Log.e("DB", "Failed to copy database");
-                createDatabase(db);
-            }
-
-            Log.i("DB", "Database created");
-        }
-
-        private void createDatabase(SQLiteDatabase db) {
             String query;
             query = MessageFormat.format(
                     "create table if not exists {0}(" +
@@ -305,6 +303,8 @@ public class DbAdapter {
                 values.put(COL_UPDATED, DATE_INITIAL);
                 db.insert(TABLE_INFO, null, values);
             }
+
+            Log.i("DB", "Database created");
         }
 
         @Override
@@ -312,12 +312,38 @@ public class DbAdapter {
             Log.i("DB", "Database upgraded");
         }
 
+        private String getDbPath(boolean includeFilename) {
+            if (includeFilename) {
+                return MessageFormat.format("/data/data/{0}/databases/{1}",
+                        context.getPackageName(),
+                        DB_NAME);
+            } else {
+                return MessageFormat.format("/data/data/{0}/databases",
+                        context.getPackageName()
+                );
+            }
+        }
+
+        private boolean checkDbExists() {
+            String path = getDbPath(true);
+            boolean exist = false;
+
+            File dbFile = new File(path);
+            exist = dbFile.exists();
+
+            return exist;
+        }
+
         private void copyDatabase() throws IOException {
             InputStream input = context.getAssets().open(DB_NAME);
-            String dbPath = MessageFormat.format("/data/data/{0}/databases/{1}",
-                    context.getPackageName(),
-                    DB_NAME);
-            OutputStream output = new FileOutputStream(dbPath);
+            String dbPath = getDbPath(true);
+            OutputStream output;
+            try {
+                output = new FileOutputStream(dbPath);
+            } catch (FileNotFoundException e) {
+                new File(getDbPath(false)).mkdirs();
+                output = new FileOutputStream(dbPath);
+            }
 
             byte[] buffer = new byte[1024];
             int length;
