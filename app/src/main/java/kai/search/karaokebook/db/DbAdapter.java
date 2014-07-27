@@ -12,6 +12,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -163,7 +167,7 @@ public class DbAdapter {
         Cursor cursor = db.query(TABLE_INFO,
                 new String[]{COL_UPDATED},
                 null,
-                null, null, null, null);
+                null, null, null, COL_UPDATED + " desc");
 
         cursor.moveToFirst();
         String lastUpdated = cursor.getString(0);
@@ -179,16 +183,31 @@ public class DbAdapter {
     private class DbHelper extends SQLiteOpenHelper {
         private static final String DB_NAME = "karaoke";
         private static final int DB_VERSION = 1;
+        private final Context context;
 
         public DbHelper(Context context) {
             super(context, DB_NAME, null, DB_VERSION);
+            this.context = context;
         }
 
         @Override
         public void onCreate(SQLiteDatabase db) {
+
+            try {
+                copyDatabase();
+                Log.i("DB", "Copy initial database succeeded.");
+            } catch (IOException e) {
+                Log.e("DB", "Failed to copy database");
+                createDatabase(db);
+            }
+
+            Log.i("DB", "Database created");
+        }
+
+        private void createDatabase(SQLiteDatabase db) {
             String query;
             query = MessageFormat.format(
-                    "create table {0}(" +
+                    "create table if not exists {0}(" +
                             "{1} text not null," +
                             "{2} text not null," +
                             "{3} text not null," +
@@ -199,25 +218,47 @@ public class DbAdapter {
             );
             db.execSQL(query);
 
-            query = String.format(
-                    "create table %s(" +
-                            "%s date not null" +
+            query = MessageFormat.format(
+                    "create table if not exists {0}(" +
+                            "{1} date not null" +
                             ");",
                     TABLE_INFO, COL_UPDATED
             );
             db.execSQL(query);
 
             // Insert zero last updated.
-            ContentValues values = new ContentValues();
-            values.put(COL_UPDATED, DATE_INITIAL);
-            db.insert(TABLE_INFO, null, values);
-
-            Log.i("DB", "Database created");
+            Cursor cursor = db.query(TABLE_INFO,
+                    new String[]{COL_UPDATED},
+                    null,
+                    null, null, null, null);
+            if (cursor.getCount() == 0) {
+                ContentValues values = new ContentValues();
+                values.put(COL_UPDATED, DATE_INITIAL);
+                db.insert(TABLE_INFO, null, values);
+            }
         }
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
             Log.i("DB", "Database upgraded");
+        }
+
+        private void copyDatabase() throws IOException {
+            InputStream input = context.getAssets().open(DB_NAME);
+            String dbPath = MessageFormat.format("/data/data/{0}/databases/{1}",
+                    context.getPackageName(),
+                    DB_NAME);
+            OutputStream output = new FileOutputStream(dbPath);
+
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = input.read(buffer)) > 0) {
+                output.write(buffer, 0, length);
+            }
+
+            output.flush();
+            output.close();
+            input.close();
         }
     }
 }
