@@ -25,7 +25,7 @@ import kai.search.karaokebook.db.DbAdapter;
 
 public class UpdateChecker {
 
-    private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd");
+    private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
     private final Context context;
     private DbAdapter dbAdapter;
 
