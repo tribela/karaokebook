@@ -57,12 +57,6 @@ public class SearchFragment extends Fragment implements
         dbAdapter = new DbAdapter(getActivity());
 
         sharedPreference = PreferenceManager.getDefaultSharedPreferences(getActivity());
-
-        checkUpdate();
-    }
-
-    private void checkUpdate() {
-        new UpdateChecker(getActivity()).checkUpdate();
     }
 
     @Override
