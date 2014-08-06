@@ -8,12 +8,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-
 
 import java.util.ArrayList;
 
@@ -30,16 +27,9 @@ public class FavouritesFragment extends ListFragment implements AdapterView.OnIt
 
     private OnFragmentInteractionListener mListener;
 
-    /**
-     * The fragment's ListView/GridView.
-     */
     private ListView mListView;
 
 
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
-     */
     public FavouritesFragment() {
     }
 
@@ -93,11 +83,6 @@ public class FavouritesFragment extends ListFragment implements AdapterView.OnIt
         mListener = null;
     }
 
-    /**
-     * The default content for this Fragment has a TextView that is shown when
-     * the list is empty. If you would like to change the text, call this method
-     * to supply the text it should use.
-     */
     public void setEmptyText(CharSequence emptyText) {
         View emptyView = mListView.getEmptyView();
 
@@ -111,7 +96,7 @@ public class FavouritesFragment extends ListFragment implements AdapterView.OnIt
         DialogInterface.OnClickListener clickListener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                switch(which) {
+                switch (which) {
                     case DialogInterface.BUTTON_POSITIVE:
                         Song song = adapter.getItem(position);
                         dbAdapter.removeFavouriteSong(song);
@@ -130,16 +115,6 @@ public class FavouritesFragment extends ListFragment implements AdapterView.OnIt
         return false;
     }
 
-    /**
-    * This interface must be implemented by activities that contain this
-    * fragment to allow an interaction in this fragment to be communicated
-    * to the activity and potentially other fragments contained in that
-    * activity.
-    * <p>
-    * See the Android Training lesson <a href=
-    * "http://developer.android.com/training/basics/fragments/communicating.html"
-    * >Communicating with Other Fragments</a> for more information.
-    */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         public void onFragmentInteraction(String id);

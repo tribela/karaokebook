@@ -6,9 +6,6 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 
-/**
- * A simple {@link Fragment} subclass.
- */
 public class SettingFragment extends PreferenceFragment implements Preference.OnPreferenceClickListener {
 
     private static final String KEY_UPDATE = "update";
