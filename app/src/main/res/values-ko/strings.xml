@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">노래방 책</string>
+    <string name="title_search">검색</string>
+    <string name="title_favourites">즐겨찾기</string>
+    <string name="title_setting">설정</string>
+    <string name="title_activity_update">업데이트</string>
+    <string name="navigation_drawer_open">네비게이션 드로어 열기</string>
+    <string name="navigation_drawer_close">네비게이션 드로어 닫기</string>
+    <string name="action_settings">설정</string>
+
+    <string name="msg_update_db">데이터베이스 업데이트중...</string>
+    <string name="msg_update_unavailable">업데이트를 사용할 수 없습니다.</string>
+    <string name="msg_add_to_favourite">즐겨찾기에 추가하시겠습니까?</string>
+    <string name="msg_remove_favourite">즐겨찾기에서 제거하시겠습니까?</string>
+    <string name="msg_do_update">업데이트 "{0}" 를 다운받을 수 있습니다. 업데이트 할까요?</string>
+    <string name="msg_up_to_date">최신 상태입니다.</string>
+
+    <string name="category_general">일반</string>
+
+</resources>

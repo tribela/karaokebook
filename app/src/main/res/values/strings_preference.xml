@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="key_search_middle">search_middle</string>
+    <string name="key_search_middle" translatable="false">search_middle</string>
     <string name="title_search_middle">Search in middle</string>
     <string name="text_search_middle_on">Searching from middle of text.</string>
     <string name="text_search_middle_off">Searching from begin of text.</string>

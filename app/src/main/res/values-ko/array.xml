@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="searchCategory">
+        <item>제목</item>
+        <item>가수</item>
+        <item>곡번호</item>
+    </string-array>
+
+    <string-array name="vendor">
+        <item>모두</item>
+        <item>금영</item>
+        <item>태진</item>
+    </string-array>
+</resources>
