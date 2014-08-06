@@ -14,6 +14,8 @@
     <string name="msg_update_unavailable">Update is not available.</string>
     <string name="msg_add_to_favourite">Add to favourite?</string>
     <string name="msg_remove_favourite">Remove from favourite?</string>
+    <string name="msg_do_update">Update {0} available. do update?</string>
+    <string name="msg_up_to_date">It is latest database.</string>
 
     <string name="category_general">General</string>
 

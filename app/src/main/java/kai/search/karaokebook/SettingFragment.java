@@ -5,7 +5,6 @@ import android.app.Fragment;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
-import android.widget.Toast;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -34,13 +33,7 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
     @Override
     public boolean onPreferenceClick(Preference preference) {
         if (preference.getKey().equals(KEY_UPDATE)) {
-            String msg;
-            if (updateChecker.updateAvailable()) {
-                updateChecker.doUpdate();
-            } else {
-                Toast.makeText(getActivity(), R.string.msg_update_unavailable, Toast.LENGTH_SHORT)
-                        .show();
-            }
+            updateChecker.checkUpdate();
         }
         return false;
     }

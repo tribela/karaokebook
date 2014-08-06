@@ -64,13 +64,11 @@ public class SearchFragment extends Fragment implements
 
         sharedPreference = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
-        checkFirstRun();
+        checkUpdate();
     }
 
-    private void checkFirstRun() {
-        if (dbAdapter.isFirstTime()) {
-            new UpdateChecker(getActivity()).doUpdate();
-        }
+    private void checkUpdate() {
+        new UpdateChecker(getActivity()).checkUpdate();
     }
 
     @Override
@@ -184,7 +182,7 @@ public class SearchFragment extends Fragment implements
         DialogInterface.OnClickListener clickListener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                switch(which) {
+                switch (which) {
                     case DialogInterface.BUTTON_POSITIVE:
                         Song song = adapter.getItem(position);
                         dbAdapter.addFavouriteSong(song);
