@@ -61,6 +61,7 @@ public class UpdateChecker {
 
     private class CheckUpdate extends AsyncTask<Void, Void, String> {
         String updatedDate;
+        String toastMsg = null;
 
         @Override
         protected String doInBackground(Void... params) {
@@ -69,10 +70,10 @@ public class UpdateChecker {
                 JSONObject json = new JSONObject(content);
                 updatedDate = json.getString("last_updated");
             } catch (JSONException e) {
-                Toast.makeText(context, R.string.msg_update_unavailable, Toast.LENGTH_SHORT).show();
+                toastMsg = context.getString(R.string.msg_update_unavailable);
                 e.printStackTrace();
             } catch (IOException e) {
-                Toast.makeText(context, R.string.msg_update_unavailable, Toast.LENGTH_SHORT).show();
+                toastMsg = context.getString(R.string.msg_update_unavailable);
                 e.printStackTrace();
             }
 
@@ -82,40 +83,44 @@ public class UpdateChecker {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            if (updatedDate == null) {
-                return;
-            }
-            try {
-                Date localUpdated = null;
-                localUpdated = dateFormat.parse(dbAdapter.getLastUpdated());
-                Date remoteUpdated = dateFormat.parse(updatedDate);
 
-                if (localUpdated.before(remoteUpdated)) {
-                    DialogInterface.OnClickListener clickListener = new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            switch (which) {
-                                case DialogInterface.BUTTON_POSITIVE:
-                                    new DoUpdate(context).execute();
-                                    break;
-                                case DialogInterface.BUTTON_NEGATIVE:
-                                    break;
+            if (updatedDate != null) {
+                try {
+                    Date localUpdated = null;
+                    localUpdated = dateFormat.parse(dbAdapter.getLastUpdated());
+                    Date remoteUpdated = dateFormat.parse(updatedDate);
+
+                    if (localUpdated.before(remoteUpdated)) {
+                        DialogInterface.OnClickListener clickListener = new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                switch (which) {
+                                    case DialogInterface.BUTTON_POSITIVE:
+                                        new DoUpdate(context).execute();
+                                        break;
+                                    case DialogInterface.BUTTON_NEGATIVE:
+                                        break;
+                                }
                             }
-                        }
-                    };
+                        };
 
-                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                    builder.setMessage(MessageFormat.format(
-                            context.getString(R.string.msg_do_update),
-                            remoteUpdated));
-                    builder.setPositiveButton(android.R.string.yes, clickListener);
-                    builder.setNegativeButton(android.R.string.no, clickListener);
-                    builder.show();
-                } else {
-                    Toast.makeText(context, R.string.msg_up_to_date, Toast.LENGTH_SHORT).show();
+                        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                        builder.setMessage(MessageFormat.format(
+                                context.getString(R.string.msg_do_update),
+                                remoteUpdated));
+                        builder.setPositiveButton(android.R.string.yes, clickListener);
+                        builder.setNegativeButton(android.R.string.no, clickListener);
+                        builder.show();
+                    } else {
+                        Toast.makeText(context, R.string.msg_up_to_date, Toast.LENGTH_SHORT).show();
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
                 }
-            } catch (ParseException e) {
-                e.printStackTrace();
+            }
+
+            if (toastMsg != null) {
+                Toast.makeText(context, toastMsg, Toast.LENGTH_SHORT).show();
             }
         }
     }
