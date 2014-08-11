@@ -57,6 +57,12 @@ public class NavigationDrawerFragment extends Fragment {
         }
 
         // Select either the default item (0) or the last selected item.
+        Bundle extras = getActivity().getIntent().getExtras();
+        if (extras != null) {
+            if (extras.containsKey("fragment_position")) {
+                mCurrentSelectedPosition = Integer.parseInt(extras.getString("fragment_position"));
+            }
+        }
         selectItem(mCurrentSelectedPosition);
     }
 

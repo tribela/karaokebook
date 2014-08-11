@@ -37,7 +37,10 @@ public class Main extends Activity
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
-        checkUpdate();
+        Bundle extras = getIntent().getExtras();
+        if (extras == null || extras.containsKey("fragment_position") == false) {
+            checkUpdate();
+        }
     }
 
     private void checkUpdate() {
