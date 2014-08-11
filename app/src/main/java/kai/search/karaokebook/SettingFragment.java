@@ -1,7 +1,7 @@
 package kai.search.karaokebook;
 
 
-import android.app.Fragment;
+import android.app.Activity;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
@@ -25,6 +25,12 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
 
         Preference update = findPreference(KEY_UPDATE);
         update.setOnPreferenceClickListener(this);
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        ((Main) activity).onSectionAttached(getString(R.string.title_setting));
     }
 
     @Override
