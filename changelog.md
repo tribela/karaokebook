@@ -3,3 +3,4 @@
 
 - Fix title on settings screen.
 - Align title.
+- Add icons.
