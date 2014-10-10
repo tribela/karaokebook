@@ -1,3 +1,10 @@
+0.1.2
+-----
+
+- Update initial database.
+- Change a little artworks.
+
+
 0.1.1
 -----
 
