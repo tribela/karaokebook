@@ -170,7 +170,7 @@ public class UpdateChecker {
                 String localUpdated = dbAdapter.getLastUpdated();
                 String content = getHttpContent(
                         String.format("http://karaoke.kjwon15.net/get_update/%s/",
-                                URLEncoder.encode(localUpdated, "UTF-8")));
+                                localUpdated.replace(" ", "%20")));
                 JSONObject json = new JSONObject(content);
 
                 String updated = json.getString("updated");
