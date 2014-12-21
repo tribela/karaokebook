@@ -19,6 +19,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URLEncoder;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -28,7 +29,7 @@ import kai.search.karaokebook.db.DbAdapter;
 
 public class UpdateChecker {
 
-    private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    private static SimpleDateFormat datetimeFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
     private final Context context;
     private DbAdapter dbAdapter;
 
@@ -87,8 +88,8 @@ public class UpdateChecker {
             if (updatedDate != null) {
                 try {
                     Date localUpdated = null;
-                    localUpdated = dateFormat.parse(dbAdapter.getLastUpdated());
-                    Date remoteUpdated = dateFormat.parse(updatedDate);
+                    localUpdated = datetimeFormat.parse(dbAdapter.getLastUpdated());
+                    Date remoteUpdated = datetimeFormat.parse(updatedDate);
 
                     if (localUpdated.before(remoteUpdated)) {
                         DialogInterface.OnClickListener clickListener = new DialogInterface.OnClickListener() {
@@ -168,7 +169,8 @@ public class UpdateChecker {
             try {
                 String localUpdated = dbAdapter.getLastUpdated();
                 String content = getHttpContent(
-                        String.format("http://karaoke.kjwon15.net/get_update/%s/", localUpdated));
+                        String.format("http://karaoke.kjwon15.net/get_update/%s/",
+                                URLEncoder.encode(localUpdated, "UTF-8")));
                 JSONObject json = new JSONObject(content);
 
                 String updated = json.getString("updated");

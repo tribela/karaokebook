@@ -41,7 +41,7 @@ public class DbAdapter {
 
     private static final String TABLE_INFO = "information";
     private static final String COL_UPDATED = "updated";
-    private static final String DATE_INITIAL = "1970-01-01";
+    private static final String DATE_INITIAL = "1970-01-01 00:00:00";
 
     private Context context;
     private DbHelper dbHelper;
@@ -244,7 +244,7 @@ public class DbAdapter {
 
     private class DbHelper extends SQLiteOpenHelper {
         private static final String DB_NAME = "karaoke";
-        private static final int DB_VERSION = 1;
+        private static final int DB_VERSION = 2;
         private final Context context;
 
         public DbHelper(Context context) {
@@ -278,7 +278,7 @@ public class DbAdapter {
 
             query = MessageFormat.format(
                     "create table if not exists {0}(" +
-                            "{1} date not null" +
+                            "{1} datetime not null" +
                             ");",
                     TABLE_INFO, COL_UPDATED
             );
@@ -309,7 +309,13 @@ public class DbAdapter {
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            Log.i("DB", "Database upgraded");
+            Log.i("DB", "Database upgraded from " + oldVersion);
+
+            switch(oldVersion) {
+                case 1:
+                    db.execSQL(MessageFormat.format(
+                    "update {0} set {1} = datetime({1});", TABLE_INFO, COL_UPDATED));
+            }
         }
 
         private String getDbPath(boolean includeFilename) {
