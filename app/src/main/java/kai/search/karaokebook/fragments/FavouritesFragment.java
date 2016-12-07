@@ -31,6 +31,8 @@ public class FavouritesFragment extends ListFragment implements AdapterView.OnIt
 
     private ListView mListView;
 
+    private long categoryId;
+
 
     public FavouritesFragment() {
     }
@@ -48,13 +50,14 @@ public class FavouritesFragment extends ListFragment implements AdapterView.OnIt
         list = new ArrayList<>();
         adapter = new SongAdapter(getActivity(), list);
         dbAdapter = new DbAdapter(getActivity());
+        categoryId = getArguments().getLong("RowId");
         reloadFavourites();
     }
 
     private void reloadFavourites() {
 
         list.clear();
-        for (Song song : dbAdapter.getFavouriteSongs()) {
+        for (Song song : dbAdapter.getFavouriteSongs(categoryId)) {
             list.add(song);
         }
         adapter.notifyDataSetChanged();

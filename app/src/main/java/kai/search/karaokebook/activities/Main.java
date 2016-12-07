@@ -13,7 +13,6 @@ import kai.search.karaokebook.R;
 import kai.search.karaokebook.UpdateChecker;
 import kai.search.karaokebook.fragments.AboutFragment;
 import kai.search.karaokebook.fragments.FavouriteCategoriesFragment;
-import kai.search.karaokebook.fragments.FavouritesFragment;
 import kai.search.karaokebook.fragments.NavigationDrawerFragment;
 import kai.search.karaokebook.fragments.SearchFragment;
 import kai.search.karaokebook.fragments.SettingFragment;
@@ -57,12 +56,20 @@ public class Main extends Activity
         new UpdateChecker(this).checkUpdate();
     }
 
+    public void startNewFragment(Fragment fragment) {
+        getFragmentManager().beginTransaction()
+                .replace(R.id.container, fragment)
+                .addToBackStack(null)
+                .commit();
+    }
+
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction()
                 .replace(R.id.container, fragments[position])
+                .addToBackStack(null)
                 .commit();
 
     }

@@ -1,6 +1,8 @@
 package kai.search.karaokebook.fragments;
 
 import android.app.AlertDialog;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.app.ListFragment;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -21,7 +23,7 @@ import kai.search.karaokebook.db.DbAdapter;
 import kai.search.karaokebook.db.FavouriteCategory;
 
 public class FavouriteCategoriesFragment extends ListFragment
-        implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
+        implements AdapterView.OnItemLongClickListener {
 
     private ArrayList<FavouriteCategory> list;
     private CategoryAdapter adapter;
@@ -95,10 +97,15 @@ public class FavouriteCategoriesFragment extends ListFragment
     }
 
     @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        FavouriteCategory category = adapter.getItem(position);
-
+    public void onListItemClick(ListView l, View v, int position, long id) {
         // TODO: start fragment with category
+        FavouriteCategory category = adapter.getItem(position);
+        Fragment fragment = new FavouritesFragment();
+        Bundle arguments = new Bundle();
+        arguments.putLong("RowId", category.getRowId());
+        fragment.setArguments(arguments);
+        Main main = (Main) getActivity();
+        main.startNewFragment(fragment);
     }
 
     @Override
@@ -123,7 +130,7 @@ public class FavouriteCategoriesFragment extends ListFragment
         builder.setPositiveButton(android.R.string.yes, clickListener);
         builder.setNegativeButton(android.R.string.no, clickListener);
         builder.show();
-        return false;
+        return true;
     }
 
     public interface OnFragmentInteractionListener {

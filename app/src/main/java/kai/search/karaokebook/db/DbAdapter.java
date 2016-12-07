@@ -215,15 +215,15 @@ public class DbAdapter {
         return result > 0;
     }
 
-    public List<Song> getFavouriteSongs() {
+    public List<Song> getFavouriteSongs(long categoryId) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         ArrayList<Song> results = new ArrayList<Song>();
 
         Cursor cursor = db.rawQuery(MessageFormat.format(
                 "select {1}, {2}, {3}, {4}, {5} from {0} where rowid in (" +
-                        "select {7} from {6})",
+                        "select {7} from {6} where {8} = {9})",
                 TABLE_SONG, COL_ROWID, COL_VENDOR, COL_TITLE, COL_NUMBER, COL_SINGER,
-                TABLE_FAVORITES, COL_SONG_ID
+                TABLE_FAVORITES, COL_SONG_ID, COL_CATEGORY_ID, categoryId
         ), null);
 
         int indexRowid = cursor.getColumnIndex(COL_ROWID);
