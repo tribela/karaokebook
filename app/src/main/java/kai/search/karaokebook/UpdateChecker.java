@@ -11,23 +11,23 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import kai.search.karaokebook.db.DbAdapter;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class UpdateChecker {
 
     private static SimpleDateFormat datetimeFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
     private final Context context;
     private DbAdapter dbAdapter;
+    private OkHttpClient client = new OkHttpClient();
 
     public UpdateChecker(Context context) {
         this.context = context;
@@ -40,22 +40,11 @@ public class UpdateChecker {
     }
 
     private String getHttpContent(String urlStr) throws IOException {
-        URL url = new URL(urlStr);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-
-        conn.setRequestMethod("GET");
-        conn.setDoInput(true);
-        conn.connect();
-
-        BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-        StringBuilder builder = new StringBuilder();
-        String buffer;
-
-        while ((buffer = reader.readLine()) != null) {
-            builder.append(buffer);
-        }
-
-        return builder.toString();
+        Request request = new Request.Builder()
+                .url(urlStr)
+                .build();
+        Response response = client.newCall(request).execute();
+        return response.body().string();
     }
 
     private class CheckUpdate extends AsyncTask<Void, Void, String> {
