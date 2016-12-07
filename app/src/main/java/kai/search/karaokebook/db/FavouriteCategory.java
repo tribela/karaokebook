@@ -12,4 +12,12 @@ public class FavouriteCategory {
         this.rowId = rowId;
         this.categoryName = categoryName;
     }
+
+    public long getRowId() {
+        return rowId;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
+    }
 }

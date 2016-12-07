@@ -186,6 +186,14 @@ public class DbAdapter {
         return results;
     }
 
+    public boolean removeFavoriteCategory(FavouriteCategory category) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        long result = db.delete(TABLE_FAVCATEGORY, "rowid = ?",
+                new String[]{String.valueOf(category.getRowId())});
+        db.close();
+        return result > 0;
+    }
+
     public boolean addFavouriteSong(Song song) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
