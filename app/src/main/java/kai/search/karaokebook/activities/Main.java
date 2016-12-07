@@ -29,6 +29,7 @@ public class Main extends Activity
             new SearchFragment(),
             new FavouritesFragment(),
             new SettingFragment(),
+            new AboutFragment(),
     };
 
     @Override

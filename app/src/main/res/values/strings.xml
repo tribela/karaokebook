@@ -18,5 +18,6 @@
     <string name="msg_up_to_date">It is latest database.</string>
 
     <string name="category_general">General</string>
+    <string name="title_about">About</string>
 
 </resources>
