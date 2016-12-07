@@ -7,19 +7,15 @@ import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URLEncoder;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -43,13 +39,15 @@ public class UpdateChecker {
         checkUpdate.execute();
     }
 
-    private String getHttpContent(String url) throws IOException {
-        HttpClient client = new DefaultHttpClient();
-        HttpGet request = new HttpGet(url);
-        HttpResponse response = client.execute(request);
+    private String getHttpContent(String urlStr) throws IOException {
+        URL url = new URL(urlStr);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
-        InputStream content = response.getEntity().getContent();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(content));
+        conn.setRequestMethod("GET");
+        conn.setDoInput(true);
+        conn.connect();
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
         StringBuilder builder = new StringBuilder();
         String buffer;
 
