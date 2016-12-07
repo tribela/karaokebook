@@ -36,8 +36,12 @@ public class DbAdapter {
     private static final String COL_TITLE = "title";
     private static final String COL_SINGER = "singer";
 
-    private static final String TABLE_STAR = "stars";
+    private static final String TABLE_FAVORITES = "favourites";
+    private static final String COL_CATEGORY_ID = "category_id";
     private static final String COL_SONG_ID = "song_id";
+
+    private static final String TABLE_FAVCATEGORY = "favourite_categories";
+    private static final String COL_CATEGORY_NAME = "category_name";
 
     private static final String TABLE_INFO = "information";
     private static final String COL_UPDATED = "updated";
@@ -163,13 +167,32 @@ public class DbAdapter {
         return results;
     }
 
+    public List<FavouriteCategory> getFavoriteCategories() {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        List<FavouriteCategory> results = new ArrayList<>();
+
+        Cursor cursor = db.query(TABLE_FAVCATEGORY,
+                new String[]{COL_ROWID, COL_CATEGORY_NAME},
+                null, null, null, null, COL_ROWID, null);
+        int indexRowId = cursor.getColumnIndex(COL_ROWID);
+        int indexCategoryName = cursor.getColumnIndex(COL_CATEGORY_NAME);
+        while (cursor.moveToNext()) {
+            long rowId = cursor.getLong(indexRowId);
+            String name = cursor.getString(indexCategoryName);
+            results.add(new FavouriteCategory(rowId, name));
+        }
+
+        db.close();
+        return results;
+    }
+
     public boolean addFavouriteSong(Song song) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
         long rowid = song.getRowid();
 
         values.put(COL_SONG_ID, rowid);
-        long result = db.insert(TABLE_STAR, null, values);
+        long result = db.insert(TABLE_FAVORITES, null, values);
 
         db.close();
         return result > 0;
@@ -177,7 +200,7 @@ public class DbAdapter {
 
     public boolean removeFavouriteSong(Song song) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        long result = db.delete(TABLE_STAR, "rowid = ?",
+        long result = db.delete(TABLE_FAVORITES, "rowid = ?",
                 new String[]{String.valueOf(song.getRowid())});
 
         db.close();
@@ -192,7 +215,7 @@ public class DbAdapter {
                 "select {1}, {2}, {3}, {4}, {5} from {0} where rowid in (" +
                         "select {7} from {6})",
                 TABLE_SONG, COL_ROWID, COL_VENDOR, COL_TITLE, COL_NUMBER, COL_SINGER,
-                TABLE_STAR, COL_SONG_ID
+                TABLE_FAVORITES, COL_SONG_ID
         ), null);
 
         int indexRowid = cursor.getColumnIndex(COL_ROWID);
@@ -244,7 +267,7 @@ public class DbAdapter {
 
     private class DbHelper extends SQLiteOpenHelper {
         private static final String DB_NAME = "karaoke";
-        private static final int DB_VERSION = 2;
+        private static final int DB_VERSION = 3;
         private final Context context;
 
         public DbHelper(Context context) {
@@ -286,10 +309,21 @@ public class DbAdapter {
 
             query = MessageFormat.format(
                     "create table if not exists {0}(" +
-                            "{1} integer primary key," +
-                            "foreign key({1}) references {2}(rowid)" +
+                            "{1} text not null," +
+                            "unique ({1})" +
                             ");",
-                    TABLE_STAR, COL_SONG_ID, TABLE_SONG
+                    TABLE_FAVCATEGORY, COL_CATEGORY_NAME
+            );
+            db.execSQL(query);
+
+            query = (
+                    "create table if not exists " + TABLE_FAVORITES + "(" +
+                            COL_CATEGORY_ID + " integer not null," +
+                            COL_SONG_ID + " integer not null," +
+                            "foreign key("+ COL_CATEGORY_ID + ") references " + TABLE_FAVCATEGORY + "(rowid)," +
+                            "foreign key("+ COL_SONG_ID + ") references " + TABLE_SONG + "(rowid)," +
+                            "unique (" + COL_CATEGORY_ID + ", " + COL_SONG_ID + ")" +
+                            ");"
             );
             db.execSQL(query);
 
@@ -315,6 +349,48 @@ public class DbAdapter {
                 case 1:
                     db.execSQL(MessageFormat.format(
                     "update {0} set {1} = datetime({1});", TABLE_INFO, COL_UPDATED));
+                case 2:
+                    final String MIGRATED_CATEGORY = "MIGRATED";
+                    // Create new favorite categories table.
+                    db.execSQL(MessageFormat.format(
+                            "create table if not exists {0}(" +
+                                    "{1} text not null," +
+                                    "unique ({1})" +
+                                    ");",
+                            TABLE_FAVCATEGORY, COL_CATEGORY_NAME
+                    ));
+
+                    // Insert one category for migrate.
+                    db.execSQL(MessageFormat.format(
+                            "insert into {0} values (\"{1}\");",
+                            TABLE_FAVCATEGORY, MIGRATED_CATEGORY
+                    ));
+
+                    // Create new favorites table.
+                    db.execSQL(
+                            "create table if not exists " + TABLE_FAVORITES + "(" +
+                                    COL_CATEGORY_ID + " integer not null," +
+                                    COL_SONG_ID + " integer not null," +
+                                    "foreign key("+ COL_CATEGORY_ID + ") references " + TABLE_FAVCATEGORY + "(rowid)," +
+                                    "foreign key("+ COL_SONG_ID + ") references " + TABLE_SONG + "(rowid)," +
+                                    "unique (" + COL_CATEGORY_ID + ", " + COL_SONG_ID + ")" +
+                                    ");"
+                    );
+
+                    // Migrate all stars to newer table.
+                    db.execSQL(MessageFormat.format(
+                            "insert into {0} ({1}, {2}) select " +
+                                    "(select rowid " +
+                                    "from {3} " +
+                                    "where {4} = \"{5}\"" +
+                                    "), {2} from stars",
+                            TABLE_FAVORITES, COL_CATEGORY_ID, COL_SONG_ID,
+                            TABLE_FAVCATEGORY,
+                            COL_CATEGORY_NAME, MIGRATED_CATEGORY
+                    ));
+
+                    // Drop old table.
+                    db.execSQL("drop table stars");
             }
         }
 
