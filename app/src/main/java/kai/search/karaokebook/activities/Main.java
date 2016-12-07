@@ -1,4 +1,4 @@
-package kai.search.karaokebook;
+package kai.search.karaokebook.activities;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -8,6 +8,13 @@ import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import kai.search.karaokebook.R;
+import kai.search.karaokebook.UpdateChecker;
+import kai.search.karaokebook.fragments.FavouritesFragment;
+import kai.search.karaokebook.fragments.NavigationDrawerFragment;
+import kai.search.karaokebook.fragments.SearchFragment;
+import kai.search.karaokebook.fragments.SettingFragment;
 
 
 public class Main extends Activity

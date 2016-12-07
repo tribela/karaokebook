@@ -1,4 +1,4 @@
-package kai.search.karaokebook;
+package kai.search.karaokebook.fragments;
 
 
 import android.app.ActionBar;
@@ -20,6 +20,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+
+import kai.search.karaokebook.R;
 
 public class NavigationDrawerFragment extends Fragment {
 

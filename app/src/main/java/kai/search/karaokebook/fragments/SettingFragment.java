@@ -1,10 +1,14 @@
-package kai.search.karaokebook;
+package kai.search.karaokebook.fragments;
 
 
 import android.app.Activity;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+
+import kai.search.karaokebook.activities.Main;
+import kai.search.karaokebook.R;
+import kai.search.karaokebook.UpdateChecker;
 
 public class SettingFragment extends PreferenceFragment implements Preference.OnPreferenceClickListener {
 

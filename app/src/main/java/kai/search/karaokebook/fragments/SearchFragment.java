@@ -1,4 +1,4 @@
-package kai.search.karaokebook;
+package kai.search.karaokebook.fragments;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -23,6 +23,8 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import kai.search.karaokebook.activities.Main;
+import kai.search.karaokebook.R;
 import kai.search.karaokebook.adapters.SongAdapter;
 import kai.search.karaokebook.db.DbAdapter;
 import kai.search.karaokebook.db.Song;
