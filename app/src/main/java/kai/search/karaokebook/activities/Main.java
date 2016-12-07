@@ -11,6 +11,7 @@ import android.view.MenuItem;
 
 import kai.search.karaokebook.R;
 import kai.search.karaokebook.UpdateChecker;
+import kai.search.karaokebook.fragments.AboutFragment;
 import kai.search.karaokebook.fragments.FavouritesFragment;
 import kai.search.karaokebook.fragments.NavigationDrawerFragment;
 import kai.search.karaokebook.fragments.SearchFragment;

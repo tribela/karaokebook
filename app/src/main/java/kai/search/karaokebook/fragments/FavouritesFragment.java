@@ -1,8 +1,8 @@
 package kai.search.karaokebook.fragments;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ListFragment;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -45,7 +45,7 @@ public class FavouritesFragment extends ListFragment implements AdapterView.OnIt
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        list = new ArrayList<Song>();
+        list = new ArrayList<>();
         adapter = new SongAdapter(getActivity(), list);
         dbAdapter = new DbAdapter(getActivity());
         reloadFavourites();
@@ -74,9 +74,9 @@ public class FavouritesFragment extends ListFragment implements AdapterView.OnIt
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        ((Main) activity).onSectionAttached(getString(R.string.title_favourites));
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        ((Main) context).onSectionAttached(getString(R.string.title_favourites));
     }
 
     @Override

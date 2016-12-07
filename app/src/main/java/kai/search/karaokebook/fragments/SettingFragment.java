@@ -1,14 +1,14 @@
 package kai.search.karaokebook.fragments;
 
 
-import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 
-import kai.search.karaokebook.activities.Main;
 import kai.search.karaokebook.R;
 import kai.search.karaokebook.UpdateChecker;
+import kai.search.karaokebook.activities.Main;
 
 public class SettingFragment extends PreferenceFragment implements Preference.OnPreferenceClickListener {
 
@@ -32,9 +32,9 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        ((Main) activity).onSectionAttached(getString(R.string.title_setting));
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        ((Main) context).onSectionAttached(getString(R.string.title_setting));
     }
 
     @Override
