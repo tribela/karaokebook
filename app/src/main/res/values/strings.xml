@@ -16,6 +16,9 @@
     <string name="msg_remove_favourite">Remove from favourite?</string>
     <string name="msg_do_update">Update {0} available. do update?</string>
     <string name="msg_up_to_date">It is latest database.</string>
+    <string name="msg_select_category">Select category</string>
+    <string name="msg_add_new">Add new</string>
+    <string name="msg_new_category_name">New category name</string>
 
     <string name="category_general">General</string>
     <string name="title_about">About</string>

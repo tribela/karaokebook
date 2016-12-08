@@ -27,6 +27,7 @@ import kai.search.karaokebook.R;
 import kai.search.karaokebook.activities.Main;
 import kai.search.karaokebook.adapters.SongAdapter;
 import kai.search.karaokebook.db.DbAdapter;
+import kai.search.karaokebook.db.FavouriteCategory;
 import kai.search.karaokebook.db.Song;
 
 
@@ -169,25 +170,72 @@ public class SearchFragment extends Fragment implements
 
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+        final Song song = adapter.getItem(position);
+        final List<FavouriteCategory> categories = dbAdapter.getFavoriteCategories();
+        CharSequence[] items = aggregateCategoryNames(categories);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         DialogInterface.OnClickListener clickListener = new DialogInterface.OnClickListener() {
+            int categoryPosition;
+
             @Override
-            public void onClick(DialogInterface dialog, int which) {
+            public void onClick(DialogInterface dialogInterface, int which) {
                 switch (which) {
                     case DialogInterface.BUTTON_POSITIVE:
-                        Song song = adapter.getItem(position);
-                        dbAdapter.addFavouriteSong(song);
+                        if (categoryPosition < categories.size()) {
+                            // Existing category
+                            long categoryId = categories.get(categoryPosition).getRowId();
+                            dbAdapter.addFavouriteSong(categoryId, song);
+                        } else {
+                            makeCategoryAndFav(song);
+                        }
                         break;
                     case DialogInterface.BUTTON_NEGATIVE:
                         break;
+                    default:
+                        categoryPosition = which;
                 }
             }
         };
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage(R.string.msg_add_to_favourite);
+        builder.setSingleChoiceItems(items, 0, clickListener);
         builder.setPositiveButton(android.R.string.yes, clickListener);
         builder.setNegativeButton(android.R.string.no, clickListener);
+        builder.setTitle(R.string.msg_select_category);
         builder.show();
+
         return false;
+    }
+
+    private void makeCategoryAndFav(final Song song) {
+        final EditText input = new EditText(getActivity());
+        DialogInterface.OnClickListener clickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int which) {
+                switch (which) {
+                    case DialogInterface.BUTTON_POSITIVE:
+                        String categoryName = input.getText().toString();
+                        long categoryId = dbAdapter.createOrGetFavoriteCategory(categoryName);
+                        dbAdapter.addFavouriteSong(categoryId, song);
+                }
+            }
+        };
+
+        new AlertDialog.Builder(getActivity())
+                .setTitle(R.string.msg_new_category_name)
+                .setView(input)
+                .setPositiveButton(android.R.string.yes, clickListener)
+                .setNegativeButton(android.R.string.no, clickListener)
+                .show();
+    }
+
+    private CharSequence[] aggregateCategoryNames(List<FavouriteCategory> categories) {
+        CharSequence[] results = new CharSequence[categories.size() + 1];
+        for (int i = 0; i < categories.size(); i += 1) {
+            results[i] = categories.get(i).getCategoryName();
+        }
+
+        results[results.length - 1] = getString(R.string.msg_add_new);
+
+        return results;
     }
 
     public interface OnFragmentInteractionListener {

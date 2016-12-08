@@ -186,19 +186,41 @@ public class DbAdapter {
         return results;
     }
 
+    public long createOrGetFavoriteCategory(String categoryName) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COL_CATEGORY_NAME, categoryName);
+
+        long id = db.insert(TABLE_FAVCATEGORY, null, values);
+        if (id < 0) {
+            Cursor cursor = db.query(TABLE_FAVCATEGORY,
+                    new String[]{COL_ROWID},
+                    COL_CATEGORY_NAME + " = ?", new String[]{categoryName},
+                    null, null, null, null);
+            cursor.moveToFirst();
+            int indexRowId = cursor.getColumnIndex(COL_ROWID);
+            return cursor.getLong(indexRowId);
+        }
+        db.close();
+        return id;
+    }
+
     public boolean removeFavoriteCategory(FavouriteCategory category) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
+        db.delete(TABLE_FAVORITES, COL_CATEGORY_ID + " = ?",
+                new String[]{String.valueOf(category.getRowId())});
         long result = db.delete(TABLE_FAVCATEGORY, "rowid = ?",
                 new String[]{String.valueOf(category.getRowId())});
         db.close();
         return result > 0;
     }
 
-    public boolean addFavouriteSong(Song song) {
+    public boolean addFavouriteSong(long categoryId, Song song) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
         long rowid = song.getRowid();
 
+        values.put(COL_CATEGORY_ID, categoryId);
         values.put(COL_SONG_ID, rowid);
         long result = db.insert(TABLE_FAVORITES, null, values);
 
@@ -329,8 +351,8 @@ public class DbAdapter {
                     "create table if not exists " + TABLE_FAVORITES + "(" +
                             COL_CATEGORY_ID + " integer not null," +
                             COL_SONG_ID + " integer not null," +
-                            "foreign key("+ COL_CATEGORY_ID + ") references " + TABLE_FAVCATEGORY + "(rowid)," +
-                            "foreign key("+ COL_SONG_ID + ") references " + TABLE_SONG + "(rowid)," +
+                            "foreign key(" + COL_CATEGORY_ID + ") references " + TABLE_FAVCATEGORY + "(rowid)," +
+                            "foreign key(" + COL_SONG_ID + ") references " + TABLE_SONG + "(rowid)," +
                             "unique (" + COL_CATEGORY_ID + ", " + COL_SONG_ID + ")" +
                             ");"
             );
@@ -354,10 +376,10 @@ public class DbAdapter {
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
             Log.i("DB", "Database upgraded from " + oldVersion);
 
-            switch(oldVersion) {
+            switch (oldVersion) {
                 case 1:
                     db.execSQL(MessageFormat.format(
-                    "update {0} set {1} = datetime({1});", TABLE_INFO, COL_UPDATED));
+                            "update {0} set {1} = datetime({1});", TABLE_INFO, COL_UPDATED));
                 case 2:
                     final String MIGRATED_CATEGORY = "MIGRATED";
                     // Create new favorite categories table.
@@ -380,8 +402,8 @@ public class DbAdapter {
                             "create table if not exists " + TABLE_FAVORITES + "(" +
                                     COL_CATEGORY_ID + " integer not null," +
                                     COL_SONG_ID + " integer not null," +
-                                    "foreign key("+ COL_CATEGORY_ID + ") references " + TABLE_FAVCATEGORY + "(rowid)," +
-                                    "foreign key("+ COL_SONG_ID + ") references " + TABLE_SONG + "(rowid)," +
+                                    "foreign key(" + COL_CATEGORY_ID + ") references " + TABLE_FAVCATEGORY + "(rowid)," +
+                                    "foreign key(" + COL_SONG_ID + ") references " + TABLE_SONG + "(rowid)," +
                                     "unique (" + COL_CATEGORY_ID + ", " + COL_SONG_ID + ")" +
                                     ");"
                     );
