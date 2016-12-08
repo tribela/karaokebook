@@ -11,10 +11,26 @@ android {
         versionCode 5
         versionName "1.1.0"
     }
+
+    signingConfigs {
+        release {
+            def propsFile = rootProject.file("local.properties")
+            def props = new Properties()
+            props.load(new FileInputStream(propsFile))
+
+            storeFile file(props['storeFile'])
+            storePassword props['storePassword']
+            keyAlias props['keyAlias']
+            keyPassword props['keyPassword']
+        }
+    }
+
     buildTypes {
         debug {
             applicationIdSuffix ".debug"
             versionNameSuffix "-debug"
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         release {
             minifyEnabled true
