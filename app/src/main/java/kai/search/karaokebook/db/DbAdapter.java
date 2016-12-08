@@ -206,10 +206,11 @@ public class DbAdapter {
         return result > 0;
     }
 
-    public boolean removeFavouriteSong(Song song) {
+    public boolean removeFavouriteSong(long categoryId, Song song) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        long result = db.delete(TABLE_FAVORITES, "rowid = ?",
-                new String[]{String.valueOf(song.getRowid())});
+        long result = db.delete(TABLE_FAVORITES,
+                COL_CATEGORY_ID + " = ? and " + COL_SONG_ID + " = ?",
+                new String[]{String.valueOf(categoryId), String.valueOf(song.getRowid())});
 
         db.close();
         return result > 0;

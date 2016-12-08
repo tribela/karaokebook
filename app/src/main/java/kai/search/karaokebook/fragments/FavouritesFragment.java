@@ -104,7 +104,7 @@ public class FavouritesFragment extends ListFragment implements AdapterView.OnIt
                 switch (which) {
                     case DialogInterface.BUTTON_POSITIVE:
                         Song song = adapter.getItem(position);
-                        dbAdapter.removeFavouriteSong(song);
+                        dbAdapter.removeFavouriteSong(categoryId, song);
                         reloadFavourites();
                         break;
                     case DialogInterface.BUTTON_NEGATIVE:
