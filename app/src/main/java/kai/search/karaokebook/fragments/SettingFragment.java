@@ -3,14 +3,14 @@ package kai.search.karaokebook.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.preference.Preference;
-import android.preference.PreferenceFragment;
+import android.support.v7.preference.PreferenceFragmentCompat;
+import android.support.v7.preference.Preference;
 
 import kai.search.karaokebook.R;
 import kai.search.karaokebook.UpdateChecker;
 import kai.search.karaokebook.activities.Main;
 
-public class SettingFragment extends PreferenceFragment implements Preference.OnPreferenceClickListener {
+public class SettingFragment extends PreferenceFragmentCompat implements Preference.OnPreferenceClickListener {
 
     private static final String KEY_UPDATE = "update";
     private UpdateChecker updateChecker;
@@ -29,6 +29,11 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
 
         Preference update = findPreference(KEY_UPDATE);
         update.setOnPreferenceClickListener(this);
+    }
+
+    @Override
+    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+
     }
 
     @Override
