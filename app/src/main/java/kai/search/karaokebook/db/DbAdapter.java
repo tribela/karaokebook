@@ -299,7 +299,7 @@ public class DbAdapter {
     }
 
     private String simplifyTitle(String title) {
-        return title.replaceAll("\\P{L}", "");
+        return title.replaceAll("\\p{P}|\\p{Z}", "");
     }
 
 
