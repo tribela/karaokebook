@@ -112,9 +112,9 @@ public class DbAdapter {
     public List<Song> getSongs(String _vendor, String _title, String _number, String _singer,
                                boolean searchFromMiddle) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        ArrayList<String> whereClauses = new ArrayList<String>();
-        ArrayList<String> whereArgs = new ArrayList<String>();
-        ArrayList<Song> results = new ArrayList<Song>();
+        ArrayList<String> whereClauses = new ArrayList<>();
+        ArrayList<String> whereArgs = new ArrayList<>();
+        ArrayList<Song> results = new ArrayList<>();
 
         String likeFormat;
         if (searchFromMiddle) {
@@ -124,8 +124,8 @@ public class DbAdapter {
         }
 
         if (_vendor != null) {
-            whereClauses.add("vendor like ?");
-            whereArgs.add(String.format(likeFormat, _vendor));
+            whereClauses.add("vendor = ?");
+            whereArgs.add(_vendor);
         }
 
         if (_title != null) {
