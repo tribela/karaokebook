@@ -132,8 +132,8 @@ public class DbAdapter {
         }
 
         if (_title != null) {
-            whereClauses.add("title like ?");
-            whereArgs.add(String.format(likeFormat, _title));
+            whereClauses.add(COL_SIMPLIFIED + " like ?");
+            whereArgs.add(String.format(likeFormat, simplifyTitle(_title)));
         }
 
         if (_number != null) {
