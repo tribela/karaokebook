@@ -321,7 +321,6 @@ public class DbAdapter {
                 dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
                 dialog.setCancelable(false);
                 dialog.setMessage(context.getString(R.string.msg_update_db));
-                dialog.show();
             }
 
             @Override
@@ -341,6 +340,7 @@ public class DbAdapter {
                 switch (action) {
                     case SET_MAX:
                         this.dialog.setMax(param);
+                        dialog.show();
                         break;
                     case UPDATE_PROGRESS:
                         this.dialog.setProgress(param);
@@ -355,7 +355,11 @@ public class DbAdapter {
                         COL_SIMPLIFIED + " = \"\"", null,
                         null, null, null);
 
-                publishProgress(SET_MAX, cursor.getCount());
+                int count = cursor.getCount();
+                if (count == 0)  {
+                    return null;
+                }
+                publishProgress(SET_MAX, count);
 
                 int indexRowId = cursor.getColumnIndex(COL_ROWID);
                 int indexTitle = cursor.getColumnIndex(COL_TITLE);
