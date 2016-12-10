@@ -331,7 +331,7 @@ public class DbAdapter {
                             "{2} text not null," +
                             "{3} text not null," +
                             "{4} text not null," +
-                            "{5} text not null default ''," +
+                            "{5} text not null default \"\"," +
                             "unique ({1}, {2}) on conflict replace" +
                             ");",
                     TABLE_SONG, COL_VENDOR, COL_NUMBER, COL_TITLE, COL_SINGER, COL_SIMPLIFIED
@@ -433,7 +433,7 @@ public class DbAdapter {
                 case 3:
                     db.execSQL(
                             "alter table " + TABLE_SONG + " add column " + COL_SIMPLIFIED +
-                                    " not null default '';"
+                                    " not null default \"\";"
                     );
 
                     Cursor cursor = db.query(TABLE_SONG,
