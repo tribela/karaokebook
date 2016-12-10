@@ -60,6 +60,8 @@ public class SearchFragment extends Fragment implements
         dbAdapter = new DbAdapter(getActivity());
 
         sharedPreference = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
+        dbAdapter.updateIndices(getContext());
     }
 
     @Override

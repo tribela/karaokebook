@@ -1,10 +1,12 @@
 package kai.search.karaokebook.db;
 
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.AsyncTask;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -12,16 +14,19 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import kai.search.karaokebook.R;
 import kai.search.karaokebook.UpdateChecker;
 
 /**
@@ -35,6 +40,7 @@ public class DbAdapter {
     private static final String COL_NUMBER = "number";
     private static final String COL_TITLE = "title";
     private static final String COL_SINGER = "singer";
+    private static final String COL_SIMPLIFIED = "simplified";
 
     private static final String TABLE_FAVORITES = "favourites";
     private static final String COL_CATEGORY_ID = "category_id";
@@ -62,6 +68,7 @@ public class DbAdapter {
         values.put(COL_NUMBER, song.getNumber());
         values.put(COL_TITLE, song.getTitle());
         values.put(COL_SINGER, song.getSinger());
+        values.put(COL_SIMPLIFIED, simplifyTitle(song.getTitle()));
 
         long id = db.insert(TABLE_SONG, null, values);
         db.close();
@@ -87,6 +94,7 @@ public class DbAdapter {
                     values.put(COL_NUMBER, number);
                     values.put(COL_TITLE, title);
                     values.put(COL_SINGER, singer);
+                    values.put(COL_SIMPLIFIED, simplifyTitle(title));
                     db.insert(TABLE_SONG, null, values);
 
                     task.publishProgress(i + 1, title);
@@ -129,8 +137,8 @@ public class DbAdapter {
         }
 
         if (_title != null) {
-            whereClauses.add("title like ?");
-            whereArgs.add(String.format(likeFormat, _title));
+            whereClauses.add(COL_SIMPLIFIED + " like ?");
+            whereArgs.add(String.format(likeFormat, simplifyTitle(_title)));
         }
 
         if (_number != null) {
@@ -295,10 +303,86 @@ public class DbAdapter {
         return getLastUpdated().equals(DATE_INITIAL);
     }
 
+    private String simplifyTitle(String title) {
+        return title.replaceAll("\\p{P}|\\p{Z}", "");
+    }
+
+    public void updateIndices(final Context updateContext) {
+        new AsyncTask<Void, Integer, Void>() {
+            ProgressDialog dialog;
+
+            private static final int SET_MAX = 1;
+            private static final int UPDATE_PROGRESS = 2;
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                this.dialog = new ProgressDialog(updateContext);
+                dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                dialog.setCancelable(false);
+                dialog.setMessage(context.getString(R.string.msg_update_db));
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+                if (this.dialog.isShowing()) {
+                    this.dialog.dismiss();
+                }
+            }
+
+            @Override
+            protected void onProgressUpdate(Integer... params) {
+                super.onProgressUpdate(params);
+                int action = params[0];
+                int param = params[1];
+
+                switch (action) {
+                    case SET_MAX:
+                        this.dialog.setMax(param);
+                        dialog.show();
+                        break;
+                    case UPDATE_PROGRESS:
+                        this.dialog.setProgress(param);
+                        break;
+                }
+            }
+
+            @Override
+            protected Void doInBackground(Void... voids) {
+                SQLiteDatabase db = dbHelper.getWritableDatabase();
+                Cursor cursor = db.query(TABLE_SONG, new String[]{COL_ROWID, COL_TITLE},
+                        COL_SIMPLIFIED + " = \"\"", null,
+                        null, null, null);
+
+                int count = cursor.getCount();
+                if (count == 0)  {
+                    return null;
+                }
+                publishProgress(SET_MAX, count);
+
+                int indexRowId = cursor.getColumnIndex(COL_ROWID);
+                int indexTitle = cursor.getColumnIndex(COL_TITLE);
+                while (cursor.moveToNext()) {
+                    long rowId = cursor.getLong(indexRowId);
+                    String title = cursor.getString(indexTitle);
+                    String simplified = simplifyTitle(title);
+
+                    ContentValues values = new ContentValues();
+                    values.put(COL_SIMPLIFIED, simplified);
+                    db.update(TABLE_SONG, values, COL_ROWID + " = ?",
+                            new String[]{String.valueOf(rowId)});
+                    publishProgress(UPDATE_PROGRESS, cursor.getPosition());
+                }
+
+                return null;
+            }
+        }.execute();
+    }
 
     private class DbHelper extends SQLiteOpenHelper {
         private static final String DB_NAME = "karaoke";
-        private static final int DB_VERSION = 3;
+        private static final int DB_VERSION = 4;
         private final Context context;
 
         public DbHelper(Context context) {
@@ -324,9 +408,10 @@ public class DbAdapter {
                             "{2} text not null," +
                             "{3} text not null," +
                             "{4} text not null," +
+                            "{5} text not null default \"\"," +
                             "unique ({1}, {2}) on conflict replace" +
                             ");",
-                    TABLE_SONG, COL_VENDOR, COL_NUMBER, COL_TITLE, COL_SINGER
+                    TABLE_SONG, COL_VENDOR, COL_NUMBER, COL_TITLE, COL_SINGER, COL_SIMPLIFIED
             );
             db.execSQL(query);
 
@@ -422,7 +507,13 @@ public class DbAdapter {
 
                     // Drop old table.
                     db.execSQL("drop table stars");
+                case 3:
+                    db.execSQL(
+                            "alter table " + TABLE_SONG + " add column " + COL_SIMPLIFIED +
+                                    " not null default \"\";"
+                    );
             }
+
         }
 
         private String getDbPath(boolean includeFilename) {
