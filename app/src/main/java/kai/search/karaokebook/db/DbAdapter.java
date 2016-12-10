@@ -1,10 +1,12 @@
 package kai.search.karaokebook.db;
 
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.AsyncTask;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -12,16 +14,19 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import kai.search.karaokebook.R;
 import kai.search.karaokebook.UpdateChecker;
 
 /**
@@ -302,6 +307,74 @@ public class DbAdapter {
         return title.replaceAll("\\p{P}|\\p{Z}", "");
     }
 
+    public void updateIndices(final Context updateContext) {
+        new AsyncTask<Void, Integer, Void>() {
+            ProgressDialog dialog;
+
+            private static final int SET_MAX = 1;
+            private static final int UPDATE_PROGRESS = 2;
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                this.dialog = new ProgressDialog(updateContext);
+                dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                dialog.setCancelable(false);
+                dialog.setMessage(context.getString(R.string.msg_update_db));
+                dialog.show();
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+                if (this.dialog.isShowing()) {
+                    this.dialog.dismiss();
+                }
+            }
+
+            @Override
+            protected void onProgressUpdate(Integer... params) {
+                super.onProgressUpdate(params);
+                int action = params[0];
+                int param = params[1];
+
+                switch (action) {
+                    case SET_MAX:
+                        this.dialog.setMax(param);
+                        break;
+                    case UPDATE_PROGRESS:
+                        this.dialog.setProgress(param);
+                        break;
+                }
+            }
+
+            @Override
+            protected Void doInBackground(Void... voids) {
+                SQLiteDatabase db = dbHelper.getWritableDatabase();
+                Cursor cursor = db.query(TABLE_SONG, new String[]{COL_ROWID, COL_TITLE},
+                        COL_SIMPLIFIED + " = \"\"", null,
+                        null, null, null);
+
+                publishProgress(SET_MAX, cursor.getCount());
+
+                int indexRowId = cursor.getColumnIndex(COL_ROWID);
+                int indexTitle = cursor.getColumnIndex(COL_TITLE);
+                while (cursor.moveToNext()) {
+                    long rowId = cursor.getLong(indexRowId);
+                    String title = cursor.getString(indexTitle);
+                    String simplified = simplifyTitle(title);
+
+                    ContentValues values = new ContentValues();
+                    values.put(COL_SIMPLIFIED, simplified);
+                    db.update(TABLE_SONG, values, COL_ROWID + " = ?",
+                            new String[]{String.valueOf(rowId)});
+                    publishProgress(UPDATE_PROGRESS, cursor.getPosition());
+                }
+
+                return null;
+            }
+        }.execute();
+    }
 
     private class DbHelper extends SQLiteOpenHelper {
         private static final String DB_NAME = "karaoke";
@@ -435,30 +508,6 @@ public class DbAdapter {
                             "alter table " + TABLE_SONG + " add column " + COL_SIMPLIFIED +
                                     " not null default \"\";"
                     );
-
-                    Cursor cursor = db.query(TABLE_SONG,
-                            new String[]{COL_ROWID, COL_TITLE},
-                            null, null, null, null, null);
-
-                    int indexRowId = cursor.getColumnIndex(COL_ROWID);
-                    int indexTitle = cursor.getColumnIndex(COL_TITLE);
-
-                    while (cursor.moveToNext()) {
-                        long rowId = cursor.getLong(indexRowId);
-                        String title = cursor.getString(indexTitle);
-                        String simplified = simplifyTitle(title);
-
-                        ContentValues values = new ContentValues();
-                        values.put(COL_SIMPLIFIED, simplified);
-
-                        db.update(TABLE_SONG, values,
-                                COL_ROWID + " = ?", new String[]{String.valueOf(rowId)});
-
-                        Log.d("MIGRATE", MessageFormat.format(
-                                "{0} -> {1}",
-                                title, simplified
-                        ));
-                    }
             }
 
         }
