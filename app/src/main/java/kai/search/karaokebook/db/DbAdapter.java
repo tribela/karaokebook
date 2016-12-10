@@ -35,6 +35,7 @@ public class DbAdapter {
     private static final String COL_NUMBER = "number";
     private static final String COL_TITLE = "title";
     private static final String COL_SINGER = "singer";
+    private static final String COL_SIMPLIFIED = "simplified";
 
     private static final String TABLE_FAVORITES = "favourites";
     private static final String COL_CATEGORY_ID = "category_id";
@@ -62,6 +63,7 @@ public class DbAdapter {
         values.put(COL_NUMBER, song.getNumber());
         values.put(COL_TITLE, song.getTitle());
         values.put(COL_SINGER, song.getSinger());
+        values.put(COL_SIMPLIFIED, simplifyTitle(song.getTitle()));
 
         long id = db.insert(TABLE_SONG, null, values);
         db.close();
@@ -87,6 +89,7 @@ public class DbAdapter {
                     values.put(COL_NUMBER, number);
                     values.put(COL_TITLE, title);
                     values.put(COL_SINGER, singer);
+                    values.put(COL_SIMPLIFIED, simplifyTitle(title));
                     db.insert(TABLE_SONG, null, values);
 
                     task.publishProgress(i + 1, title);
@@ -295,10 +298,14 @@ public class DbAdapter {
         return getLastUpdated().equals(DATE_INITIAL);
     }
 
+    private String simplifyTitle(String title) {
+        return title.replaceAll("\\P{L}", "");
+    }
+
 
     private class DbHelper extends SQLiteOpenHelper {
         private static final String DB_NAME = "karaoke";
-        private static final int DB_VERSION = 3;
+        private static final int DB_VERSION = 4;
         private final Context context;
 
         public DbHelper(Context context) {
@@ -324,9 +331,10 @@ public class DbAdapter {
                             "{2} text not null," +
                             "{3} text not null," +
                             "{4} text not null," +
+                            "{5} text not null default ''," +
                             "unique ({1}, {2}) on conflict replace" +
                             ");",
-                    TABLE_SONG, COL_VENDOR, COL_NUMBER, COL_TITLE, COL_SINGER
+                    TABLE_SONG, COL_VENDOR, COL_NUMBER, COL_TITLE, COL_SINGER, COL_SIMPLIFIED
             );
             db.execSQL(query);
 
@@ -422,7 +430,37 @@ public class DbAdapter {
 
                     // Drop old table.
                     db.execSQL("drop table stars");
+                case 3:
+                    db.execSQL(
+                            "alter table " + TABLE_SONG + " add column " + COL_SIMPLIFIED +
+                                    " not null default '';"
+                    );
+
+                    Cursor cursor = db.query(TABLE_SONG,
+                            new String[]{COL_ROWID, COL_TITLE},
+                            null, null, null, null, null);
+
+                    int indexRowId = cursor.getColumnIndex(COL_ROWID);
+                    int indexTitle = cursor.getColumnIndex(COL_TITLE);
+
+                    while (cursor.moveToNext()) {
+                        long rowId = cursor.getLong(indexRowId);
+                        String title = cursor.getString(indexTitle);
+                        String simplified = simplifyTitle(title);
+
+                        ContentValues values = new ContentValues();
+                        values.put(COL_SIMPLIFIED, simplified);
+
+                        db.update(TABLE_SONG, values,
+                                COL_ROWID + " = ?", new String[]{String.valueOf(rowId)});
+
+                        Log.d("MIGRATE", MessageFormat.format(
+                                "{0} -> {1}",
+                                title, simplified
+                        ));
+                    }
             }
+
         }
 
         private String getDbPath(boolean includeFilename) {
