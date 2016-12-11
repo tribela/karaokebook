@@ -391,7 +391,7 @@ public class DbAdapter {
 
             if (checkDbExists() == false) {
                 try {
-                    copyDatabase();
+                    copyDatabase(DB_NAME);
                     Log.i("DB", "Copy initial database succeeded.");
                 } catch (IOException e) {
                     Log.e("DB", "Failed to copy database");
@@ -512,15 +512,33 @@ public class DbAdapter {
                             "alter table " + TABLE_SONG + " add column " + COL_SIMPLIFIED +
                                     " not null default \"\";"
                     );
+
+                    try {
+                        // Temporarily end transaction to attach database;
+                        db.setTransactionSuccessful();
+                        db.endTransaction();
+
+                        String dbName = "karaoke_orig";
+                        copyDatabase(dbName);
+                        db.execSQL(MessageFormat.format("attach \"{0}\" as orig",
+                                getDbPath(dbName)));
+                        db.execSQL("insert into songs select * from orig.songs");
+                        db.execSQL("detach orig");
+                        Log.d("MIGRATE", "Copy simplified from asset");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } finally {
+                        db.beginTransaction();
+                    }
             }
 
         }
 
-        private String getDbPath(boolean includeFilename) {
-            if (includeFilename) {
+        private String getDbPath(String fileName) {
+            if (fileName != null) {
                 return MessageFormat.format("/data/data/{0}/databases/{1}",
                         context.getPackageName(),
-                        DB_NAME);
+                        fileName);
             } else {
                 return MessageFormat.format("/data/data/{0}/databases",
                         context.getPackageName()
@@ -529,7 +547,7 @@ public class DbAdapter {
         }
 
         private boolean checkDbExists() {
-            String path = getDbPath(true);
+            String path = getDbPath(DB_NAME);
             boolean exist = false;
 
             File dbFile = new File(path);
@@ -538,14 +556,14 @@ public class DbAdapter {
             return exist;
         }
 
-        private void copyDatabase() throws IOException {
+        private void copyDatabase(String filename) throws IOException {
             InputStream input = context.getAssets().open(DB_NAME);
-            String dbPath = getDbPath(true);
+            String dbPath = getDbPath(filename);
             OutputStream output;
             try {
                 output = new FileOutputStream(dbPath);
             } catch (FileNotFoundException e) {
-                new File(getDbPath(false)).mkdirs();
+                new File(getDbPath(null)).mkdirs();
                 output = new FileOutputStream(dbPath);
             }
 
