@@ -38,6 +38,8 @@ public class NavigationDrawerFragment extends Fragment {
     private ListView mDrawerListView;
     private View mFragmentContainerView;
 
+    String[] titles;
+
     private int mCurrentSelectedPosition = 0;
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
@@ -58,6 +60,13 @@ public class NavigationDrawerFragment extends Fragment {
             mCurrentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
             mFromSavedInstanceState = true;
         }
+
+        this.titles = new String[] {
+                getString(R.string.title_search),
+                getString(R.string.title_favourites),
+                getString(R.string.title_setting),
+                getString(R.string.title_about),
+        };
 
         // Select either the default item (0) or the last selected item.
         Bundle extras = getActivity().getIntent().getExtras();
@@ -87,16 +96,11 @@ public class NavigationDrawerFragment extends Fragment {
                 selectItem(position);
             }
         });
-        mDrawerListView.setAdapter(new ArrayAdapter<String>(
+        mDrawerListView.setAdapter(new ArrayAdapter<>(
                 getActivity(),
                 android.R.layout.simple_list_item_activated_1,
                 android.R.id.text1,
-                new String[]{
-                        getString(R.string.title_search),
-                        getString(R.string.title_favourites),
-                        getString(R.string.title_setting),
-                        getString(R.string.title_about),
-                }
+                this.titles
         ));
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         return mDrawerListView;
@@ -185,6 +189,8 @@ public class NavigationDrawerFragment extends Fragment {
         if (mCallbacks != null) {
             mCallbacks.onNavigationDrawerItemSelected(position);
         }
+
+        getActionBar().setTitle(titles[position]);
     }
 
     @Override

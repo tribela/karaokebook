@@ -71,18 +71,12 @@ public class Main extends AppCompatActivity
                 .replace(R.id.container, fragments[position])
                 .addToBackStack(null)
                 .commit();
-
-    }
-
-    public void onSectionAttached(String title) {
-        mTitle = title;
     }
 
     public void restoreActionBar() {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setTitle(mTitle);
     }
 
 

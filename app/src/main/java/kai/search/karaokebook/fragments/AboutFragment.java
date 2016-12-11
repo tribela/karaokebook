@@ -22,12 +22,6 @@ import kai.search.karaokebook.activities.Main;
 public class AboutFragment extends Fragment {
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        ((Main) context).onSectionAttached(getString(R.string.title_about));
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment

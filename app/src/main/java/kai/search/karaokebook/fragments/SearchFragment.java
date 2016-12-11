@@ -102,12 +102,6 @@ public class SearchFragment extends Fragment implements
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        ((Main) context).onSectionAttached(getString(R.string.title_search));
-    }
-
-    @Override
     public void onDetach() {
         super.onDetach();
         mListener = null;

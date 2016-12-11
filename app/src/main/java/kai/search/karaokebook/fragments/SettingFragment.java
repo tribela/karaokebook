@@ -37,12 +37,6 @@ public class SettingFragment extends PreferenceFragmentCompat implements Prefere
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        ((Main) context).onSectionAttached(getString(R.string.title_setting));
-    }
-
-    @Override
     public boolean onPreferenceClick(Preference preference) {
         if (preference.getKey().equals(KEY_UPDATE)) {
             updateChecker.checkUpdate();

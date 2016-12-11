@@ -76,12 +76,6 @@ public class FavouriteCategoriesFragment extends ListFragment
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        ((Main) context).onSectionAttached(getString(R.string.title_favourites));
-    }
-
-    @Override
     public void onDetach() {
         super.onDetach();
         mListener = null;
