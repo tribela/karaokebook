@@ -8,8 +8,8 @@ android {
         applicationId "kai.search.karaokebook"
         minSdkVersion 15
         targetSdkVersion 25
-        versionCode 7
-        versionName "1.2.0"
+        versionCode 8
+        versionName "1.2.1"
     }
 
     signingConfigs {
