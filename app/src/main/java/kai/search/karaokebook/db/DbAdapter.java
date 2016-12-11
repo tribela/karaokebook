@@ -14,13 +14,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -521,7 +518,7 @@ public class DbAdapter {
                         String dbName = "karaoke_orig";
                         copyDatabase(dbName);
                         db.execSQL(MessageFormat.format("attach \"{0}\" as orig",
-                                getDbPath(dbName)));
+                                context.getDatabasePath(dbName).toString()));
                         db.execSQL("insert into songs select * from orig.songs");
                         db.execSQL("detach orig");
                         Log.d("MIGRATE", "Copy simplified from asset");
@@ -534,20 +531,8 @@ public class DbAdapter {
 
         }
 
-        private String getDbPath(String fileName) {
-            if (fileName != null) {
-                return MessageFormat.format("/data/data/{0}/databases/{1}",
-                        context.getPackageName(),
-                        fileName);
-            } else {
-                return MessageFormat.format("/data/data/{0}/databases",
-                        context.getPackageName()
-                );
-            }
-        }
-
         private boolean checkDbExists() {
-            String path = getDbPath(DB_NAME);
+            String path = context.getDatabasePath(DB_NAME).toString();
             boolean exist = false;
 
             File dbFile = new File(path);
@@ -558,14 +543,10 @@ public class DbAdapter {
 
         private void copyDatabase(String filename) throws IOException {
             InputStream input = context.getAssets().open(DB_NAME);
-            String dbPath = getDbPath(filename);
+            context.getDatabasePath(filename).getParentFile().mkdirs();
+            String dbPath = context.getDatabasePath(filename).toString();
             OutputStream output;
-            try {
-                output = new FileOutputStream(dbPath);
-            } catch (FileNotFoundException e) {
-                new File(getDbPath(null)).mkdirs();
-                output = new FileOutputStream(dbPath);
-            }
+            output = new FileOutputStream(dbPath);
 
             byte[] buffer = new byte[1024];
             int length;
