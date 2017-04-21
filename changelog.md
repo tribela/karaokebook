@@ -1,3 +1,9 @@
+1.2.3
+-----
+
+- Don't set title on nav drawer open.
+
+
 1.2.2
 -----
 
