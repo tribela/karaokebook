@@ -69,7 +69,7 @@ public class Main extends AppCompatActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
                 .replace(R.id.container, fragments[position])
-                .addToBackStack(null)
+//                .addToBackStack(null)
                 .commit();
     }
 
