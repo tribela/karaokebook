@@ -8,6 +8,8 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -62,6 +64,12 @@ public class SearchFragment extends Fragment implements
         sharedPreference = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
         dbAdapter.updateIndices(getContext());
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(getString(R.string.title_search));
     }
 
     @Override

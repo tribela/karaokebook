@@ -3,6 +3,7 @@ package kai.search.karaokebook.fragments;
 import android.support.v4.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,6 +34,12 @@ public class AboutFragment extends Fragment {
         readText("APACHE_LICENSE_2.txt", mainView);
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(getString(R.string.title_about));
     }
 
     private void readText(String filename, TextView headerView) {

@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,6 +41,7 @@ public class FavouriteCategoriesFragment extends ListFragment
     @Override
     public void onResume() {
         super.onResume();
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(getString(R.string.title_favourites));
         reloadCategories();
     }
 

@@ -3,6 +3,7 @@ package kai.search.karaokebook.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.Preference;
 
@@ -29,6 +30,12 @@ public class SettingFragment extends PreferenceFragmentCompat implements Prefere
 
         Preference update = findPreference(KEY_UPDATE);
         update.setOnPreferenceClickListener(this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(getString(R.string.title_setting));
     }
 
     @Override
