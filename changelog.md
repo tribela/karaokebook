@@ -1,3 +1,11 @@
+1.2.2
+-----
+
+- Fix method to get db path
+- Fix title on action bar when pressed back button
+- Pull DB
+
+
 0.1.2
 -----
 
