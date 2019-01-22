@@ -1,12 +1,10 @@
 package kai.search.karaokebook.fragments;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
-import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -100,7 +98,7 @@ public class FavouriteCategoriesFragment extends ListFragment
         arguments.putLong("RowId", category.getRowId());
         fragment.setArguments(arguments);
         Main main = (Main) getActivity();
-        main.startNewFragment(fragment);
+        main.startFragment(fragment);
     }
 
     @Override

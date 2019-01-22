@@ -1,11 +1,13 @@
 package kai.search.karaokebook.activities;
 
-import android.support.v4.view.GravityCompat;
-import android.support.v7.app.ActionBar;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -13,41 +15,38 @@ import kai.search.karaokebook.R;
 import kai.search.karaokebook.UpdateChecker;
 import kai.search.karaokebook.fragments.AboutFragment;
 import kai.search.karaokebook.fragments.FavouriteCategoriesFragment;
-import kai.search.karaokebook.fragments.NavigationDrawerFragment;
 import kai.search.karaokebook.fragments.SearchFragment;
 import kai.search.karaokebook.fragments.SettingFragment;
 
 
 public class Main extends AppCompatActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+        implements NavigationView.OnNavigationItemSelectedListener {
 
-    private NavigationDrawerFragment mNavigationDrawerFragment;
-
-    Fragment[] fragments = new Fragment[]{
-            new SearchFragment(),
-            new FavouriteCategoriesFragment(),
-            new SettingFragment(),
-            new AboutFragment(),
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mNavigationDrawerFragment = (NavigationDrawerFragment)
-                getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-        // Set up the drawer.
-        mNavigationDrawerFragment.setUp(
-                R.id.navigation_drawer,
-                (DrawerLayout) findViewById(R.id.drawer_layout));
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar,
+                R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
 
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
 
         Bundle extras = getIntent().getExtras();
         if (extras == null || extras.containsKey("fragment_position") == false) {
             checkUpdate();
         }
+
+        displaySelectedScreen(R.id.nav_search);
     }
 
     @Override
@@ -60,49 +59,48 @@ public class Main extends AppCompatActivity
         }
     }
 
-    private void checkUpdate() {
-        new UpdateChecker(this).checkUpdate();
-    }
-
-    public void startNewFragment(Fragment fragment) {
+    public void startFragment(Fragment fragment) {
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container, fragment)
+                .replace(R.id.content_frame, fragment)
                 .commit();
     }
 
-    @Override
-    public void setTitle(int titleId) {
-        this.getSupportActionBar().setTitle(titleId);
+    public void displaySelectedScreen(int id) {
+        Fragment fragment = null;
+        switch (id) {
+            case R.id.nav_search:
+                fragment = new SearchFragment();
+                break;
+            case R.id.nav_favourites:
+                fragment = new FavouriteCategoriesFragment();
+                break;
+            case R.id.nav_setting:
+                fragment = new SettingFragment();
+                break;
+            case R.id.nav_about:
+                fragment = new AboutFragment();
+                break;
+        }
+
+        if (fragment != null) {
+            startFragment(fragment);
+        }
     }
 
     @Override
-    public void setTitle(CharSequence title) {
-        this.getSupportActionBar().setTitle(title);
-    }
+    public boolean onNavigationItemSelected(MenuItem item) {
+        displaySelectedScreen(item.getItemId());
 
-    @Override
-    public void onNavigationDrawerItemSelected(int position) {
-        // update the main content by replacing fragments
-        startNewFragment(fragments[position]);
-    }
-
-    public void restoreActionBar() {
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayShowTitleEnabled(true);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (!mNavigationDrawerFragment.isDrawerOpen()) {
-            // Only show items in the action bar relevant to this screen
-            // if the drawer is not showing. Otherwise, let the drawer
-            // decide what to show in the action bar.
-            getMenuInflater().inflate(R.menu.main, menu);
-            restoreActionBar();
-            return true;
-        }
-        return super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
     }
 
     @Override
@@ -115,5 +113,9 @@ public class Main extends AppCompatActivity
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void checkUpdate() {
+        new UpdateChecker(this).checkUpdate();
     }
 }
