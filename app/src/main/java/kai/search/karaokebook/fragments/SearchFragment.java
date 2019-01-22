@@ -1,14 +1,12 @@
 package kai.search.karaokebook.fragments;
 
 import android.app.AlertDialog;
-import android.support.v4.app.Fragment;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -26,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import kai.search.karaokebook.R;
-import kai.search.karaokebook.activities.Main;
 import kai.search.karaokebook.adapters.SongAdapter;
 import kai.search.karaokebook.db.DbAdapter;
 import kai.search.karaokebook.db.FavouriteCategory;
@@ -69,7 +66,7 @@ public class SearchFragment extends Fragment implements
     @Override
     public void onResume() {
         super.onResume();
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(getString(R.string.title_search));
+        getActivity().setTitle(R.string.title_search);
     }
 
     @Override

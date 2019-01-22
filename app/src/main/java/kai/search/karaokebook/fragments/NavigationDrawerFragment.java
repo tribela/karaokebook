@@ -106,6 +106,7 @@ public class NavigationDrawerFragment extends Fragment {
         return mDrawerListView;
     }
 
+
     public boolean isDrawerOpen() {
         return mDrawerLayout != null && mDrawerLayout.isDrawerOpen(mFragmentContainerView);
     }

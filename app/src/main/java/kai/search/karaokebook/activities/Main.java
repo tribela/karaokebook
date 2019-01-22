@@ -1,9 +1,9 @@
 package kai.search.karaokebook.activities;
 
+import android.support.v4.view.GravityCompat;
 import android.support.v7.app.ActionBar;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -23,8 +23,6 @@ public class Main extends AppCompatActivity
 
     private NavigationDrawerFragment mNavigationDrawerFragment;
 
-    private CharSequence mTitle;
-
     Fragment[] fragments = new Fragment[]{
             new SearchFragment(),
             new FavouriteCategoriesFragment(),
@@ -39,16 +37,26 @@ public class Main extends AppCompatActivity
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
-        mTitle = getTitle();
 
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
+
         Bundle extras = getIntent().getExtras();
         if (extras == null || extras.containsKey("fragment_position") == false) {
             checkUpdate();
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer =  findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
         }
     }
 
@@ -59,23 +67,27 @@ public class Main extends AppCompatActivity
     public void startNewFragment(Fragment fragment) {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container, fragment)
-                .addToBackStack(null)
                 .commit();
+    }
+
+    @Override
+    public void setTitle(int titleId) {
+        this.getSupportActionBar().setTitle(titleId);
+    }
+
+    @Override
+    public void setTitle(CharSequence title) {
+        this.getSupportActionBar().setTitle(title);
     }
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.container, fragments[position])
-                .addToBackStack(null)
-                .commit();
+        startNewFragment(fragments[position]);
     }
 
     public void restoreActionBar() {
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setDisplayShowTitleEnabled(true);
     }
 

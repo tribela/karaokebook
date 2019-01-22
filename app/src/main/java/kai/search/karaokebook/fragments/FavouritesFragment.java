@@ -41,7 +41,7 @@ public class FavouritesFragment extends ListFragment implements AdapterView.OnIt
     @Override
     public void onResume() {
         super.onResume();
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(getString(R.string.title_favourites));
+        getActivity().setTitle(R.string.title_favourites);
         reloadFavourites();
     }
 

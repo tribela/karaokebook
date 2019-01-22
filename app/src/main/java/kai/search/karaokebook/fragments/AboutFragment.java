@@ -39,7 +39,7 @@ public class AboutFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(getString(R.string.title_about));
+        getActivity().setTitle(R.string.title_about);
     }
 
     private void readText(String filename, TextView headerView) {

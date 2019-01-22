@@ -35,7 +35,7 @@ public class SettingFragment extends PreferenceFragmentCompat implements Prefere
     @Override
     public void onResume() {
         super.onResume();
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(getString(R.string.title_setting));
+        getActivity().setTitle(R.string.title_setting);
     }
 
     @Override
